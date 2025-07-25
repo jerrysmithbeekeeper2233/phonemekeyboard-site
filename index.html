@@ -484,68 +484,13 @@
 
             useEffect(() => { getNewWord(category); }, [category]);
 
-            
-
-            // 웹 페이지 로드 시점에 음성 목록을 미리 가져옵니다.
-// 이 변수는 스크립트의 전역 범위나, speakWord 함수가 접근할 수 있는 상위 스코프에 선언해야 합니다.
-let availableVoices = [];
-
-// 음성 목록이 준비되었을 때 호출됩니다.
-// 이 부분은 HTML <head> 또는 <body> 하단에서 스크립트 로드 후 한 번 실행되도록 배치하는 것이 좋습니다.
-if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = () => {
-        availableVoices = window.speechSynthesis.getVoices();
-        console.log("음성 목록 로드 완료:", availableVoices);
-    };
-}
-
-const speakWord = (text) => {
-    // 텍스트가 없거나 SpeechSynthesis API를 지원하지 않으면 중단
-    if (!text || !('speechSynthesis' in window)) {
-        console.warn("SpeechSynthesis API를 지원하지 않거나 텍스트가 없습니다.");
-        return;
-    }
-
-    // 현재 재생 중인 음성을 취소하여 중복 재생 방지
-    window.speechSynthesis.cancel();
-
-    // 새로운 SpeechSynthesisUtterance 객체 생성
-    const utterance = new SpeechSynthesisUtterance(text);
-    
-    // 'en-US' 언어의 영어 음성을 찾습니다.
-    // 아이폰에 흔히 있는 영어 음성 이름을 포함하여 검색 범위를 넓힙니다.
-    // 'Samantha', 'Karen', 'Daniel' 등은 아이폰 iOS에 내장된 영어 음성 이름의 예시입니다.
-    // 실제 사용자의 기기에 따라 다른 이름일 수 있으니, console.log(availableVoices); 로 확인해보는 것이 가장 정확합니다.
-    const englishVoice = availableVoices.find(voice => 
-        voice.lang === 'en-US' && 
-        (voice.name.includes('Samantha') || 
-         voice.name.includes('Karen') || 
-         voice.name.includes('Daniel') ||
-         voice.name.includes('Google US English') // 안드로이드/크롬 등 다른 환경 고려
-        )
-    ); 
-
-    // 적절한 영어 음성을 찾았다면 해당 음성을 사용합니다.
-    if (englishVoice) {
-        utterance.voice = englishVoice;
-        console.log("영어 음성 사용:", englishVoice.name);
-    } else {
-        // 찾지 못하면 기본 'en-US' 언어 설정을 폴백으로 사용합니다.
-        // 이 경우에도 아이폰 환경에 따라 한국어처럼 들릴 가능성이 남아있습니다.
-        utterance.lang = 'en-US';
-        console.warn("적절한 영어 음성을 찾지 못하여 기본 'en-US' 언어 설정 사용.");
-    }
-    
-    // 말하는 속도 설정 (0.9는 약간 느리게)
-    utterance.rate = 0.9;
-    
-    // 음성 재생
-    window.speechSynthesis.speak(utterance)
-};
-
-// speakWord 함수를 버튼 클릭 이벤트 등에 연결하여 사용합니다.
-// 예시:
-// <button onclick="speakWord('Hello world');">발음 듣기</button>
+            const speakWord = (text) => {
+                if (!text || !('speechSynthesis' in window)) return;
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
             };
 
             if (!currentWordData) return <div>{strings.loading_word}</div>;
