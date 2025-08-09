@@ -23,6 +23,9 @@
      </head>
 <body class="bg-slate-50">
     <div id="root"></div>
+<script src="db_daily.js"></script>
+<script src="db_toefl.js"></script>
+<script src="db_business.js"></script>
 
     <script type="text/babel">
         // React 훅들을 전역 React 객체에서 가져옵니다.
@@ -350,44 +353,10 @@
         // 2. 단어, 음소, 다국어 뜻 DB
         // =================================================================
         const wordDB = {
-            "Daily": [
-                { "word": "people", "ipa": "ˈpiːpəl", "meanings": { "ko": "사람들", "ja": "人々", "zh": "人们", "es": "gente", "fr": "gens", "de": "Leute", "ru": "люди" } },
-                { "word": "history", "ipa": "ˈhɪstɝi", "meanings": { "ko": "역사", "ja": "歴史", "zh": "历史", "es": "historia", "fr": "histoire", "de": "Geschichte", "ru": "история" } },
-                { "word": "way", "ipa": "weɪ", "meanings": { "ko": "방법", "ja": "方法", "zh": "方法", "es": "manera", "fr": "manière", "de": "Weg", "ru": "способ" } },
-                { "word": "art", "ipa": "ɑrt", "meanings": { "ko": "예술", "ja": "芸術", "zh": "艺术", "es": "arte", "fr": "art", "de": "Kunst", "ru": "искусство" } },
-                { "word": "world", "ipa": "wɝld", "meanings": { "ko": "세계", "ja": "世界", "zh": "世界", "es": "mundo", "fr": "monde", "de": "Welt", "ru": "мир" } },
-                { "word": "information", "ipa": "ˌɪnfɚˈmeɪʃən", "meanings": { "ko": "정보", "ja": "情報", "zh": "信息", "es": "información", "fr": "informations", "de": "Information", "ru": "информация" } },
-                { "word": "map", "ipa": "mæp", "meanings": { "ko": "지도", "ja": "地図", "zh": "地图", "es": "mapa", "fr": "carte", "de": "Karte", "ru": "карта" } },
-                { "word": "family", "ipa": "ˈfæməli", "meanings": { "ko": "가족", "ja": "家族", "zh": "家庭", "es": "familia", "fr": "famille", "de": "Familie", "ru": "семья" } },
-                { "word": "health", "ipa": "hɛlθ", "meanings": { "ko": "건강", "ja": "健康", "zh": "健康", "es": "salud", "fr": "santé", "de": "Gesundheit", "ru": "здоровье" } },
-                { "word": "system", "ipa": "ˈsɪstəm", "meanings": { "ko": "시스템", "ja": "システム", "zh": "系统", "es": "sistema", "fr": "système", "de": "System", "ru": "система" } }
-            ],
-            "Academic": [
-                { "word": "abandon", "ipa": "əˈbændən", "meanings": { "ko": "버리다, 포기하다", "ja": "放棄する", "zh": "放弃", "es": "abandonar", "fr": "abandonner", "de": "verlassen", "ru": "оставлять" } },
-                { "word": "accommodate", "ipa": "əˈkɑːmədeɪt", "meanings": { "ko": "수용하다, 편의를 제공하다", "ja": "収容する", "zh": "容纳", "es": "acomodar", "fr": "accueillir", "de": "unterbringen", "ru": "вмещать" } },
-                { "word": "analyze", "ipa": "ˈænəlaɪz", "meanings": { "ko": "분석하다", "ja": "分析する", "zh": "分析", "es": "analizar", "fr": "analyser", "de": "analysieren", "ru": "анализировать" } },
-                { "word": "bias", "ipa": "ˈbaɪəs", "meanings": { "ko": "편견, 편향", "ja": "偏見", "zh": "偏见", "es": "sesgo", "fr": "biais", "de": "Voreingenommenheit", "ru": "предвзятость" } },
-                { "word": "coherent", "ipa": "koʊˈhɪrənt", "meanings": { "ko": "일관성 있는, 논리적인", "ja": "首尾一貫した", "zh": "连贯的", "es": "coherente", "fr": "cohérent", "de": "kohärent", "ru": "связный" } },
-                { "word": "critique", "ipa": "krɪˈtiːk", "meanings": { "ko": "비평하다, 비판", "ja": "批評", "zh": "评论", "es": "crítica", "fr": "critique", "de": "Kritik", "ru": "критика" } },
-                { "word": "diverse", "ipa": "daɪˈvɝs", "meanings": { "ko": "다양한", "ja": "多様な", "zh": "多样化的", "es": "diverso", "fr": "divers", "de": "vielfältig", "ru": "разнообразный" } },
-                { "word": "enhance", "ipa": "ɪnˈhæns", "meanings": { "ko": "향상시키다", "ja": "高める", "zh": "提高", "es": "mejorar", "fr": "améliorer", "de": "verbessern", "ru": "улучшать" } },
-                { "word": "feasible", "ipa": "ˈfiːzəbəl", "meanings": { "ko": "실현 가능한", "ja": "実現可能な", "zh": "可行的", "es": "factible", "fr": "faisable", "de": "machbar", "ru": "осуществимый" } },
-                { "word": "innovative", "ipa": "ˈɪnəveɪtɪv", "meanings": { "ko": "혁신적인", "ja": "革新的な", "zh": "创新的", "es": "innovador", "fr": "innovant", "de": "innovativ", "ru": "инновационный" } }
-            ],
-            "Business": [
-                { "word": "agenda", "ipa": "əˈdʒɛndə", "meanings": { "ko": "의제", "ja": "議題", "zh": "议程", "es": "agenda", "fr": "ordre du jour", "de": "Tagesordnung", "ru": "повестка дня" } },
-                { "word": "collaborate", "ipa": "kəˈlæbəreɪt", "meanings": { "ko": "협력하다", "ja": "協力する", "zh": "合作", "es": "colaborar", "fr": "collaborer", "de": "zusammenarbeiten", "ru": "сотрудничать" } },
-                { "word": "consensus", "ipa": "kənˈsɛnsəs", "meanings": { "ko": "합의", "ja": "合意", "zh": "共识", "es": "consenso", "fr": "consensus", "de": "Konsens", "ru": "консенсус" } },
-                { "word": "delegate", "ipa": "ˈdɛlɪɡeɪt", "meanings": { "ko": "위임하다, 대표", "ja": "委任する", "zh": "委派", "es": "delegar", "fr": "déléguer", "de": "delegieren", "ru": "делегировать" } },
-                { "word": "efficiency", "ipa": "ɪˈfɪʃənsi", "meanings": { "ko": "효율성", "ja": "効率", "zh": "效率", "es": "eficiencia", "fr": "efficacité", "de": "Effizienz", "ru": "эффективность" } },
-                { "word": "forecast", "ipa": "ˈfɔːrkæst", "meanings": { "ko": "예측, 예보", "ja": "予測", "zh": "预测", "es": "pronóstico", "fr": "prévisions", "de": "Prognose", "ru": "прогноз" } },
-                { "word": "incentive", "ipa": "ɪnˈsɛntɪv", "meanings": { "ko": "장려책, 동기 부여", "ja": "インセンティブ", "zh": "激励", "es": "incentivo", "fr": "incitation", "de": "Anreiz", "ru": "сти무л" } },
-                { "word": "negotiate", "ipa": "nɪˈɡoʊʃieɪt", "meanings": { "ko": "협상하다", "ja": "交渉する", "zh": "谈判", "es": "negociar", "fr": "négocier", "de": "verhandeln", "ru": "вести переговоры" } },
-                { "word": "strategy", "ipa": "ˈstrætədʒi", "meanings": { "ko": "전략", "ja": "戦略", "zh": "战略", "es": "estrategia", "fr": "estrategia", "de": "Strategie", "ru": "стратегия" } },
-                { "word": "synergy", "ipa": "ˈsɪnərdʒi", "meanings": { "ko": "시너지, 협력 효과", "ja": "相乗効果", "zh": "协同效应", "es": "sinergia", "fr": "synergie", "de": "Synergie", "ru": "синергия" } }
-            ]
-        };
-
+        "일상": wordDB_daily,
+        "토플": wordDB_toefl,
+        "비즈니스": wordDB_business
+    };
         // =================================================================
         // 3. 컴포넌트 정의
         // =================================================================
@@ -741,3 +710,4 @@
     <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="phonemekeyd" data-description="Support me on Buy me a coffee!" data-message="Thank you for your support! Your contribution helps me create even better tools." data-color="#5F7FFF" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
 </body>
 </html>
+
