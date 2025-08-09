@@ -27,688 +27,711 @@
 <script src="db_toefl.js"></script>
 <script src="db_business.js"></script>
 
-    <script type="text/babel">
-        // React 훅들을 전역 React 객체에서 가져옵니다.
-        const { useState, useEffect, Fragment, useRef } = React;
+<script type="text/babel">
+    // React 훅들을 전역 React 객체에서 가져옵니다.
+    const { useState, useEffect, Fragment, useRef } = React;
 
-        // =================================================================
-        // 1. 다국어 UI 텍스트 DB
-        // =================================================================
-        const uiStrings = {
-            en: {
-                name: "English",
-                title: "English Phoneme Keyboard",
-                nav_download: "Keyboard Program Download",
-                nav_tester: "Word Phoneme Learning Program",
-                typing_practice_title: "Phoneme Typing Experience",
-                typing_practice_subtitle: "Refer to the keyboard layout and press the correct phoneme position.",
-                download_title: "NAE Phoneme-Based Custom Keyboard",
-                download_p1: "This keyboard is a pronunciation-focused input tool designed based on the North American English (NAE) phoneme system.",
-                download_p2: "If you download the keyboard program, you can conveniently input phonemes anywhere in the system.",
-                feature_title: "Core Design Principles:",
-                feature1_title: "Left/Right Hand Separation",
-                feature1_desc: "Vowels are typed with the left hand and consonants with the right, enhancing typing efficiency and consistency.",
-                feature2_title: "Articulation-Based Arrangement",
-                feature2_desc: "Consonant pairs sharing the same place and manner of articulation (e.g., /p/ and /b/) are on the same key. Voiceless sounds are the default, and voiced sounds are typed with the Shift key, allowing for systematic and logical use.",
-                outro: "Based on linguistic knowledge, this keyboard is an optimized tool for pronunciation education, phonetics learning, and English pronunciation practice, offering a new input experience for both learners and educators.",
-                download_button: "Download for Windows",
-                install_guide_title: "How to Install",
-                install_step1: "1. Download the ipabeta2.zip file from the link provided.",
-                install_step2: "2. Unzip the file and run setup.exe.",
-                install_step3: "3. Change the keyboard to ipabeta2 using the Win + Space key.",
-                uninstall_guide_title: "How to Uninstall",
-                uninstall_step1: "Uninstall the ipabeta2 program from the Control Panel.",
-                tester_title: "Word Phoneme Tester (American English)",
-                tester_subtitle: "Select a word category, and check the phonemes.",
-                category_label: "Word Category:",
-                presented_word: "Presented Word:",
-                ipa_input_label: "Enter Phonemes:",
-                placeholder: "e.g., /həˈloʊ/",
-                show_answer_button: "Show Answer",
-                new_word_button: "New Word",
-                meaning_language_label: "Meaning Language:",
-                show_meaning_button: "Show Meaning",
-                meaning_label: "Meaning:",
-                answer_ipa_label: "Correct Phonemes:",
-                loading_word: "Loading new word...",
-                footer_text: "© {year} PhonemeKeyboard. All Rights Reserved.",
-                contact_email: "contact us : phonemekeyboard@gmail.com"
-            },
-            ko: {
-                name: "한국어",
-                title: "영어 음소 키보드",
-                nav_download: "키보드 프로그램 다운로드",
-                nav_tester: "단어 음소 학습 프로그램",
-                typing_practice_title: "음소 타이핑 체험",
-                typing_practice_subtitle: "키보드 레이아웃을 참고해서 올바른 음소 위치를 눌러보세요.",
-                download_title: "NAE 음소 기반 맞춤형 키보드",
-                download_p1: "이 키보드는 북미 영어(NAE, North American English)의 음소 체계에 기반하여 설계된 발음 중심 입력 도구입니다.",
-                download_p2: "키보드 프로그램을 다운받으면 시스템 어디에나 음소를 편리하게 입력할 수 있습니다.",
-                feature_title: "핵심 설계 원칙:",
-                feature1_title: "좌우 분리 구조",
-                feature1_desc: "왼손은 모음, 오른손은 자음을 입력하도록 배치되어 있어 타이핑의 효율성과 일관성을 높였습니다.",
-                feature2_title: "조음 위치 & 방법 기반 정렬",
-                feature2_desc: "같은 조음 위치와 조음 방법을 공유하는 자음 쌍(예: /p/와 /b/, /t/와 /d/)은 같은 키에 배치되며, 무성음은 기본 입력, 유성음은 Shift 키와 함께 입력하도록 설계되어 체계적이고 논리적인 사용이 가능합니다.",
-                outro: "이 키보드는 언어학적 지식을 바탕으로 발음 교육, 음성학 학습, 영어 발음 연습 등에 최적화된 도구로, 학습자와 교육자 모두에게 새로운 입력 경험을 제공합니다.",
-                download_button: "Windows 버전 다운로드",
-                install_guide_title: "설치 방법",
-                install_step1: "1. 연결된 링크에서 ipabeta2.zip파일 다운받기",
-                install_step2: "2. 압축해제 후 setup.exe 파일 실행하기",
-                install_step3: "3. win+space 키로 키보드를 ipabeta2로 변경하기",
-                uninstall_guide_title: "삭제 방법",
-                uninstall_step1: "제어판에서 프로그램 제거로 ipabeta2 프로그램 제거",
-                tester_title: "단어 음소 테스터 (미국식 영어)",
-                tester_subtitle: "단어 유형을 선택하고, 음소를 확인해보세요.",
-                category_label: "단어 유형:",
-                presented_word: "제시어:",
-                ipa_input_label: "음소 입력:",
-                placeholder: "예: /həˈloʊ/",
-                show_answer_button: "정답 보기",
-                new_word_button: "새 단어 받기",
-                meaning_language_label: "의미 확인 언어:",
-                show_meaning_button: "뜻 보기",
-                meaning_label: "뜻:",
-                answer_ipa_label: "정답 음소:",
-                loading_word: "새 단어를 가져오는 중...",
-                footer_text: "© {year} PhonemeKeyboard. All Rights Reserved.",
-                contact_email: "contact us : phonemekeyboard@gmail.com"
-            },
-            ja: {
-                name: "日本語",
-                title: "英語音素キーボード",
-                nav_download: "キーボードプログラムダウンロード",
-                nav_tester: "単語音素学習プログラム",
-                typing_practice_title: "音素タイピング体験",
-                typing_practice_subtitle: "キーボードレイアウトを参考にして、正しい音素の位置を押してください。",
-                download_title: "NAE 音素ベースカスタムキーボード",
-                download_p1: "このキーボードは、北米英語（NAE）の音素体系に基づいて設計された発音中心の入力ツールです。",
-                download_p2: "キーボードプログラムをダウンロードすると、システムのどこにでも音素を便利に入力できます。",
-                feature_title: "主な設計原則：",
-                feature1_title: "左右分離構造",
-                feature1_desc: "母音は左手で、子音は右手で入力するように配置されており、タイピングの効率と一貫性を高めます。",
-                feature2_title: "調音位置・方法に基づく配置",
-                feature2_desc: "同じ調音位置と調音方法を共有する子音ペア（例：/p/と/b/）は同じキーに配置されます。無声音はデフォルトで、有声音はShiftキーとともに入力するように設計されており、体系的で論理的な使用が可能です。",
-                outro: "言語学的知識に基づいて、このキーボードは発音教育、音声学学習、英語発音練習に最適化されたツールであり、学習者と教育者の両方に新しい入力体験を提供します。",
-                download_button: "Windows版ダウンロード",
-                install_guide_title: "インストール方法",
-                install_step1: "1. 提供されたリンクからipabeta2.zipファイルをダウンロードします。",
-                install_step2: "2. ファイルを解凍し、setup.exeを実行します。",
-                install_step3: "3. Win + Space キーを使用してキーボードをipabeta2に変更します。",
-                uninstall_guide_title: "アンインストール方法",
-                uninstall_step1: "コントロールパネルからipabeta2プログラムをアンインストールします。",
-                tester_title: "単語音素テスター (アメリカ英語)",
-                tester_subtitle: "単語カテゴリを選択し、音素を確認してください。",
-                category_label: "単語カテゴリ：",
-                presented_word: "提示された単語：",
-                ipa_input_label: "音素入力：",
-                placeholder: "例: /həˈloʊ/",
-                show_answer_button: "正解を表示",
-                new_word_button: "新しい単語を取得",
-                meaning_language_label: "意味表示言語：",
-                show_meaning_button: "意味を表示",
-                meaning_label: "意味：",
-                answer_ipa_label: "正解の音素：",
-                loading_word: "新しい単어를読み込み中...",
-                footer_text: "© {year} PhonemeKeyboard. 全著作権所有。",
-                contact_email: "contact us : phonemekeyboard@gmail.com"
-            },
-            zh: {
-                name: "中文",
-                title: "英语音素键盘",
-                nav_download: "键盘程序下载",
-                nav_tester: "单词音素学习程序",
-                typing_practice_title: "音素打字体验",
-                typing_practice_subtitle: "请参考键盘布局，按下正确的音素位置。",
-                download_title: "NAE 音素定制键盘",
-                download_p1: "此键盘是基于北美英语 (NAE) 音素系统设计的注重发音的输入工具。",
-                download_p2: "如果您下载键盘程序，就可以在系统中的任何地方方便地输入音素。",
-                feature_title: "核心设计原则：",
-                feature1_title: "左右手分离",
-                feature1_desc: "元音用左手输入，辅音用右手输入，提高打字效率和一致性。",
-                feature2_title: "基于发音器官的排列",
-                feature2_desc: "共享相同发音部位和发音方式的辅音对（例如 /p/ 和 /b/）位于同一键上。清音是默认设置，浊音通过 Shift 键输入，实现系统化和逻辑化使用。",
-                outro: "基于语言学知识，此键盘是发音教育、语音学习和英语发音练习的优化工具，为学习者和教育者提供全新的输入体验。",
-                download_button: "Windows 版下载",
-                install_guide_title: "如何安装",
-                install_step1: "1. 从提供的链接下载 ipabeta2.zip 文件。",
-                install_step2: "2. 解压文件并运行 setup.exe。",
-                install_step3: "3. 使用 Win + Space 键将键盘切换到 ipabeta2。",
-                uninstall_guide_title: "如何卸载",
-                uninstall_step1: "从控制面板卸载 ipabeta2 程序。",
-                tester_title: "单词音素测试器 (美式英语)",
-                tester_subtitle: "Select a word category, and check the phonemes.",
-                category_label: "单词类别：",
-                presented_word: "呈现的单词：",
-                ipa_input_label: "输入音素：",
-                placeholder: "例如: /həˈloʊ/",
-                show_answer_button: "显示答案",
-                new_word_button: "新单词",
-                meaning_language_label: "意义语言：",
-                show_meaning_button: "显示含义",
-                meaning_label: "含义：",
-                answer_ipa_label: "正确音素：",
-                loading_word: "正在加载新单词...",
-                footer_text: "© {year} PhonemeKeyboard. 保留所有权利。",
-                contact_email: "contact us : phonemekeyboard@gmail.com"
-            },
-            es: {
-                name: "Español",
-                title: "Teclado de Fonemas de Inglés",
-                nav_download: "Descargar Teclado",
-                nav_tester: "Programa de Aprendizaje de Fonemas",
-                typing_practice_title: "Experiencia de tecleo de fonemas",
-                typing_practice_subtitle: "Consulte la distribución del teclado y presione la posición correcta del fonema.",
-                download_title: "Teclado Personalizado de Fonemas NAE",
-                download_p1: "Este teclado es una herramienta de entrada enfocada en la pronunciación, diseñada en base al sistema de fonemas del Inglés Norteamericano (NAE).",
-                download_p2: "Si descarga el programa de teclado, podrá introducir fonemas cómodamente en cualquier parte del sistema.",
-                feature_title: "Principios de Diseño Clave:",
-                feature1_title: "Separación de Mano Izquierda/Derecha",
-                feature1_desc: "Las vocales se escriben con la mano izquierda y las consonantes con la derecha, mejorando la eficiencia y consistencia de la escritura.",
-                feature2_title: "Disposición Basada en la Articulación",
-                feature2_desc: "Los pares de consonantes que comparten el mismo lugar y modo de articulación (por ejemplo, /p/ y /b/) están en la misma tecla. Los sonidos sordos son los predeterminados, y los sonidos sonoros se escriben con la tecla Shift, permitiendo un uso sistemático y lógico.",
-                outro: "Basado en el conocimiento lingüístico, este teclado es una herramienta optimizada para la educación de la pronunciación, el aprendizaje de la fonética y la práctica de la pronunciación del inglés, ofreciendo una nueva experiencia de entrada tanto para estudiantes como para educadores.",
-                download_button: "Descargar para Windows",
-                install_guide_title: "Cómo Instalar",
-                install_step1: "1. Descargue el archivo ipabeta2.zip desde el enlace proporcionado.",
-                install_step2: "2. Descomprima el archivo y ejecute setup.exe.",
-                install_step3: "3. Cambie el teclado a ipabeta2 usando la tecla Win + Espacio.",
-                uninstall_guide_title: "Cómo Desinstalar",
-                uninstall_step1: "Desinstale el programa ipabeta2 desde el Panel de Control.",
-                tester_title: "Probador de Fonemas de Palabras (Inglés Americano)",
-                tester_subtitle: "Seleccione una categoría de palabras y compruebe los fonemas.",
-                category_label: "Categoría de Palabra:",
-                presented_word: "Palabra Presentada:",
-                ipa_input_label: "Introducir Fonemas:",
-                placeholder: "ej., /həˈloʊ/",
-                show_answer_button: "Mostrar Respuesta",
-                new_word_button: "Nueva Palabra",
-                meaning_language_label: "Idioma del Significado:",
-                show_meaning_button: "Mostrar Significado",
-                meaning_label: "Significado:",
-                answer_ipa_label: "Fonemas Correctos:",
-                loading_word: "Cargando nueva palabra...",
-                footer_text: "© {year} PhonemeKeyboard. Todos los derechos reservados.",
-                contact_email: "contact us : phonemekeyboard@gmail.com"
-            },
-            de: {
-                name: "Deutsch",
-                title: "Englisches Phonem-Tastatur",
-                nav_download: "Tastaturprogramm herunterladen",
-                nav_tester: "Wort-Phonem-Lernprogramm",
-                typing_practice_title: "Phonem-Tipp-Erlebnis",
-                typing_practice_subtitle: "Beachten Sie das Tastaturlayout und drücken Sie die korrekte Phonemposition.",
-                download_title: "NAE Phonembasierte benutzerdefinierte Tastatur",
-                download_p1: "Diese Tastatur ist ein ausspracheorientiertes Eingabewerkzeug, das auf dem nordamerikanischen englischen (NAE) Phonemsystem basiert.",
-                download_p2: "Wenn Sie das Tastaturprogramm herunterladen, können Sie Phoneme bequem überall im System eingeben.",
-                feature_title: "Wichtige Designprinzipien:",
-                feature1_title: "Links-/Rechts-Hand-Trennung",
-                feature1_desc: "Vokale werden mit der linken Hand und Konsonanten mit der rechten Hand eingegeben, was die Tippeffizienz und Konsistenz verbessert.",
-                feature2_title: "Artikulationsbasierte Anordnung",
-                feature2_desc: "Konsonantenpaare, die denselben Artikulationsort und dieselbe Artikulationsart teilen (z. B. /p/ und /b/), liegen auf derselben Taste. Stimmloser Laute sind Standard, und stimmhafte Laute werden mit der Umschalttaste eingegeben, was eine systematische und logische Verwendung ermöglicht.",
-                outro: "Basierend auf linguistischem Wissen, diese Tastatur ist ein optimiertes Werkzeug für Ausspracheunterricht, Phonetik-Lernen und englische Aussprachepraxis, das sowohl Lernenden als auch Lehrenden eine neue Eingabeerfahrung bietet.",
-                download_button: "Für Windows herunterladen",
-                install_guide_title: "Installationsanleitung",
-                install_step1: "1. Laden Sie die Datei ipabeta2.zip über den angegebenen Link herunter.",
-                install_step2: "2. Entpacken Sie die Datei und führen Sie setup.exe aus.",
-                install_step3: "3. Ändern Sie die Tastatur mit der Win + Leertaste auf ipabeta2.",
-                uninstall_guide_title: "Deinstallationsanleitung",
-                uninstall_step1: "Deinstallieren Sie das Programm ipabeta2 über die Systemsteuerung.",
-                tester_title: "Wort-Phonem-Tester (Amerikanisches Englisch)",
-                tester_subtitle: "Wählen Sie eine Wortkategorie aus und überprüfen Sie die Phoneme.",
-                category_label: "Wortkategorie:",
-                presented_word: "Präsentiertes Wort:",
-                ipa_input_label: "Phoneme eingeben:",
-                placeholder: "z.B., /həˈloʊ/",
-                show_answer_button: "Antwort anzeigen",
-                new_word_button: "Neues Wort",
-                meaning_language_label: "Bedeutungssprache:",
-                show_meaning_button: "Bedeutung anzeigen",
-                meaning_label: "Bedeutung:",
-                answer_ipa_label: "Korrekte Phoneme:",
-                loading_word: "Neues Wort wird geladen...",
-                footer_text: "© {year} PhonemeKeyboard. Alle Rechte vorbehalten.",
-                contact_email: "contact us : phonemekeyboard@gmail.com"
-            },
-            fr: {
-                name: "Français",
-                title: "Clavier Phonémique Anglais",
-                nav_download: "Télécharger le Clavier",
-                nav_tester: "Programme d'Apprentissage de Phonèmes",
-                typing_practice_title: "Expérience de frappe de phonèmes",
-                typing_practice_subtitle: "Référez-vous à la disposition du clavier et appuyez sur la position phonémique correcte.",
-                download_title: "Clavier Personnalisé de Phonèmes NAE",
-                download_p1: "Ce clavier est un outil de saisie axé sur la prononciation, conçu sur la base du système phonémique de l'anglais nord-américain (NAE).",
-                download_p2: "Si vous téléchargez le programme de clavier, vous pourrez saisir facilement des phonèmes n'importe où dans le système.",
-                feature_title: "Principes de Conception Clés :",
-                feature1_title: "Séparation Main Gauche/Droite",
-                feature1_desc: "Les voyelles sont tapées avec la main gauche et les consonnes avec la main droite, améliorant l'efficacité et la cohérence de la frappe.",
-                feature2_title: "Disposition Basée sur l'Articulation",
-                feature2_desc: "Les paires de consonnes partageant le même lieu et mode d'articulation (par exemple, /p/ et /b/) se trouvent sur la même touche. Les sons sourds sont par défaut, et les sons voisés sont tapés avec la touche Maj, permettant une utilisation systématique et logique.",
-                outro: "Basé sur les connaissances linguistiques, ce clavier est un outil optimisé pour l'enseignement de la prononciation, l'apprentissage de la phonétique et la pratique de la prononciation anglaise, offrant une nouvelle expérience de saisie aux apprenants et aux éducateurs.",
-                download_button: "Télécharger pour Windows",
-                install_guide_title: "Comment Installer",
-                install_step1: "1. Téléchargez le fichier ipabeta2.zip à partir du lien fourni.",
-                install_step2: "2. Décomprimez le fichier et exécutez setup.exe.",
-                install_step3: "3. Changez le clavier pour ipabeta2 en utilisant la touche Win + Espace.",
-                uninstall_guide_title: "Comment Désinstaller",
-                uninstall_step1: "Désinstallez le programme ipabeta2 depuis le Panneau de configuration.",
-                tester_title: "Testeur de Phonèmes de Mots (Anglais Américain)",
-                tester_subtitle: "Sélectionnez une catégorie de mots et vérifiez les phonèmes.",
-                category_label: "Catégorie de Mots :",
-                presented_word: "Mot Présenté :",
-                ipa_input_label: "Saisir les Phonèmes :",
-                placeholder: "par ex., /həˈloʊ/",
-                show_answer_button: "Afficher la Réponse",
-                new_word_button: "Nouveau Mot",
-                meaning_language_label: "Langue de la Signification :",
-                show_meaning_button: "Afficher la Signification :",
-                meaning_label: "Signification :",
-                answer_ipa_label: "Phonèmes Corrects :",
-                loading_word: "Chargement d'un nouveau mot...",
-                footer_text: "© {year} PhonemeKeyboard. Tous droits réservés.",
-                contact_email: "contact us : phonemekeyboard@gmail.com"
-            },
-            ru: {
-                name: "Русский",
-                title: "Английская фонетическая клавиатура",
-                nav_download: "Скачать программу клавиатуры",
-                nav_tester: "Программа изучения фонем слов",
-                typing_practice_title: "Опыт набора фонемы",
-                typing_practice_subtitle: "Обратитесь к раскладке клавиатуры и нажмите на правильное положение фонемы.",
-                download_title: "Пользовательская клавиатура на основе фонем NAE",
-                download_p1: "Эта клавиатура представляет собой инструмент ввода, ориентированный на произношение, разработанный на основе фонемной системы североамериканского английского (NAE).",
-                download_p2: "Если вы загрузите программу клавиатуры, вы сможете удобно вводить фонемы в любом месте системы.",
-                feature_title: "Основные принципы дизайна:",
-                feature1_title: "Разделение левой/правой руки",
-                feature1_desc: "Гласные вводятся левой рукой, а согласные — правой, что повышает эффективность и согласованность набора текста.",
-                feature2_title: "Артикуляционно-ориентированное расположение",
-                feature2_desc: "Пары согласных, имеющие одинаковое место и способ артикуляции (например, /p/ и /b/), находятся на одной клавише. Глухие звуки являются стандартными, а звонкие звуки вводятся с помощью клавиши Shift, что обеспечивает систематическое и логичное использование.",
-                outro: "Основанная на лингвистических знаниях, эта клавиатура является оптимизированным инструментом для обучения произношению, изучения фонетики и практики английского произношения, предлагая новый опыт ввода как для учащихся, так и для преподавателей.",
-                download_button: "Скачать для Windows",
-                install_guide_title: "Как установить",
-                install_step1: "1. Загрузите файл ipabeta2.zip по предоставленной ссылке.",
-                install_step2: "2. Распакуйте файл и запустите setup.exe.",
-                install_step3: "3. Измените раскладку клавиатуры на ipabeta2 с помощью клавиш Win + Пробел.",
-                uninstall_guide_title: "Как удалить",
-                uninstall_step1: "Удалите программу ipabeta2 из Панели управления.",
-                tester_title: "Тестер фонем слов (американский английский)",
-                tester_subtitle: "Выберите категорию слов и проверьте фонемы.",
-                category_label: "Категория слова:",
-                presented_word: "Представленное слово:",
-                ipa_input_label: "Введите фонемы:",
-                placeholder: "напр., /həˈloʊ/",
-                show_answer_button: "Показать ответ",
-                new_word_button: "Новое слово",
-                meaning_language_label: "Язык значения:",
-                show_meaning_button: "Показать значение",
-                meaning_label: "Значение:",
-                answer_ipa_label: "Правильные фонемы:",
-                loading_word: "Загрузка нового слова...",
-                footer_text: "© {year} PhonemeKeyboard. Все права защищены.",
-                contact_email: "contact us : phonemekeyboard@gmail.com"
+    // =================================================================
+    // 1. 다국어 UI 텍스트 DB
+    // =================================================================
+    const uiStrings = {
+        en: {
+            name: "English",
+            title: "English Phoneme Keyboard",
+            nav_download: "Keyboard Program Download",
+            nav_tester: "Word Phoneme Learning Program",
+            typing_practice_title: "Phoneme Typing Experience",
+            typing_practice_subtitle: "Refer to the keyboard layout and press the correct phoneme position.",
+            download_title: "NAE Phoneme-Based Custom Keyboard",
+            download_p1: "This keyboard is a pronunciation-focused input tool designed based on the North American English (NAE) phoneme system.",
+            download_p2: "If you download the keyboard program, you can conveniently input phonemes anywhere in the system.",
+            feature_title: "Core Design Principles:",
+            feature1_title: "Left/Right Hand Separation",
+            feature1_desc: "Vowels are typed with the left hand and consonants with the right, enhancing typing efficiency and consistency.",
+            feature2_title: "Articulation-Based Arrangement",
+            feature2_desc: "Consonant pairs sharing the same place and manner of articulation (e.g., /p/ and /b/) are on the same key. Voiceless sounds are the default, and voiced sounds are typed with the Shift key, allowing for systematic and logical use.",
+            outro: "Based on linguistic knowledge, this keyboard is an optimized tool for pronunciation education, phonetics learning, and English pronunciation practice, offering a new input experience for both learners and educators.",
+            download_button: "Download for Windows",
+            install_guide_title: "How to Install",
+            install_step1: "1. Download the ipabeta2.zip file from the link provided.",
+            install_step2: "2. Unzip the file and run setup.exe.",
+            install_step3: "3. Change the keyboard to ipabeta2 using the Win + Space key.",
+            uninstall_guide_title: "How to Uninstall",
+            uninstall_step1: "Uninstall the ipabeta2 program from the Control Panel.",
+            tester_title: "Word Phoneme Tester (American English)",
+            tester_subtitle: "Select a word category, and check the phonemes.",
+            category_label: "Word Category:",
+            presented_word: "Presented Word:",
+            ipa_input_label: "Enter Phonemes:",
+            placeholder: "e.g., /həˈloʊ/",
+            show_answer_button: "Show Answer",
+            new_word_button: "New Word",
+            meaning_language_label: "Meaning Language:",
+            show_meaning_button: "Show Meaning",
+            meaning_label: "Meaning:",
+            answer_ipa_label: "Correct Phonemes:",
+            loading_word: "Loading new word...",
+            footer_text: "© {year} PhonemeKeyboard. All Rights Reserved.",
+            contact_email: "contact us : phonemekeyboard@gmail.com"
+        },
+        ko: {
+            name: "한국어",
+            title: "영어 음소 키보드",
+            nav_download: "키보드 프로그램 다운로드",
+            nav_tester: "단어 음소 학습 프로그램",
+            typing_practice_title: "음소 타이핑 체험",
+            typing_practice_subtitle: "키보드 레이아웃을 참고해서 올바른 음소 위치를 눌러보세요.",
+            download_title: "NAE 음소 기반 맞춤형 키보드",
+            download_p1: "이 키보드는 북미 영어(NAE, North American English)의 음소 체계에 기반하여 설계된 발음 중심 입력 도구입니다.",
+            download_p2: "키보드 프로그램을 다운받으면 시스템 어디에나 음소를 편리하게 입력할 수 있습니다.",
+            feature_title: "핵심 설계 원칙:",
+            feature1_title: "좌우 분리 구조",
+            feature1_desc: "왼손은 모음, 오른손은 자음을 입력하도록 배치되어 있어 타이핑의 효율성과 일관성을 높였습니다.",
+            feature2_title: "조음 위치 & 방법 기반 정렬",
+            feature2_desc: "같은 조음 위치와 조음 방법을 공유하는 자음 쌍(예: /p/와 /b/, /t/와 /d/)은 같은 키에 배치되며, 무성음은 기본 입력, 유성음은 Shift 키와 함께 입력하도록 설계되어 체계적이고 논리적인 사용이 가능합니다.",
+            outro: "이 키보드는 언어학적 지식을 바탕으로 발음 교육, 음성학 학습, 영어 발음 연습 등에 최적화된 도구로, 학습자와 교육자 모두에게 새로운 입력 경험을 제공합니다.",
+            download_button: "Windows 버전 다운로드",
+            install_guide_title: "설치 방법",
+            install_step1: "1. 연결된 링크에서 ipabeta2.zip파일 다운받기",
+            install_step2: "2. 압축해제 후 setup.exe 파일 실행하기",
+            install_step3: "3. win+space 키로 키보드를 ipabeta2로 변경하기",
+            uninstall_guide_title: "삭제 방법",
+            uninstall_step1: "제어판에서 프로그램 제거로 ipabeta2 프로그램 제거",
+            tester_title: "단어 음소 테스터 (미국식 영어)",
+            tester_subtitle: "단어 유형을 선택하고, 음소를 확인해보세요.",
+            category_label: "단어 유형:",
+            presented_word: "제시어:",
+            ipa_input_label: "음소 입력:",
+            placeholder: "예: /həˈloʊ/",
+            show_answer_button: "정답 보기",
+            new_word_button: "새 단어 받기",
+            meaning_language_label: "의미 확인 언어:",
+            show_meaning_button: "뜻 보기",
+            meaning_label: "뜻:",
+            answer_ipa_label: "정답 음소:",
+            loading_word: "새 단어를 가져오는 중...",
+            footer_text: "© {year} PhonemeKeyboard. All Rights Reserved.",
+            contact_email: "contact us : phonemekeyboard@gmail.com"
+        },
+        ja: {
+            name: "日本語",
+            title: "英語音素キーボード",
+            nav_download: "キーボードプログラムダウンロード",
+            nav_tester: "単語音素学習プログラム",
+            typing_practice_title: "音素タイピング体験",
+            typing_practice_subtitle: "キーボードレイアウトを参考にして、正しい音素の位置を押してください。",
+            download_title: "NAE 音素ベースカスタムキーボード",
+            download_p1: "このキーボードは、北米英語（NAE）の音素体系に基づいて設計された発音中心の入力ツールです。",
+            download_p2: "キーボードプログラムをダウンロードすると、システムのどこにでも音素を便利に入力できます。",
+            feature_title: "主な設計原則：",
+            feature1_title: "左右分離構造",
+            feature1_desc: "母音は左手で、子音は右手で入力するように配置されており、タイピングの効率と一貫性を高めます。",
+            feature2_title: "調音位置・方法に基づく配置",
+            feature2_desc: "同じ調音位置と調音方法を共有する子音ペア（例：/p/と/b/）は同じキーに配置されます。無声音はデフォルトで、有声音はShiftキーとともに入力するように設計されており、体系的で論理的な使用が可能です。",
+            outro: "言語学的知識に基づいて、このキーボードは発音教育、音声学学習、英語発音練習に最適化されたツールであり、学習者と教育者の両方に新しい入力体験を提供します。",
+            download_button: "Windows版ダウンロード",
+            install_guide_title: "インストール方法",
+            install_step1: "1. 提供されたリンクからipabeta2.zipファイルをダウンロードします。",
+            install_step2: "2. ファイルを解凍し、setup.exeを実行します。",
+            install_step3: "3. Win + Space キーを使用してキーボードをipabeta2に変更します。",
+            uninstall_guide_title: "アンインストール方法",
+            uninstall_step1: "コントロールパネルからipabeta2プログラムをアンインストールします。",
+            tester_title: "単語音素テスター (アメリカ英語)",
+            tester_subtitle: "単語カテゴリを選択し、音素を確認してください。",
+            category_label: "単語カテゴリ：",
+            presented_word: "提示された単語：",
+            ipa_input_label: "音素入力：",
+            placeholder: "例: /həˈloʊ/",
+            show_answer_button: "正解を表示",
+            new_word_button: "新しい単語を取得",
+            meaning_language_label: "意味表示言語：",
+            show_meaning_button: "意味を表示",
+            meaning_label: "意味：",
+            answer_ipa_label: "正解の音素：",
+            loading_word: "新しい単語を読み込み中...",
+            footer_text: "© {year} PhonemeKeyboard. 全著作権所有。",
+            contact_email: "contact us : phonemekeyboard@gmail.com"
+        },
+        zh: {
+            name: "中文",
+            title: "英语音素键盘",
+            nav_download: "键盘程序下载",
+            nav_tester: "单词音素学习程序",
+            typing_practice_title: "音素打字体验",
+            typing_practice_subtitle: "请参考键盘布局，按下正确的音素位置。",
+            download_title: "NAE 音素定制键盘",
+            download_p1: "此键盘是基于北美英语 (NAE) 音素系统设计的注重发音的输入工具。",
+            download_p2: "如果您下载键盘程序，就可以在系统中的任何地方方便地输入音素。",
+            feature_title: "核心设计原则：",
+            feature1_title: "左右手分离",
+            feature1_desc: "元音用左手输入，辅音用右手输入，提高打字效率和一致性。",
+            feature2_title: "基于发音器官的排列",
+            feature2_desc: "共享相同发音部位和发音方式的辅音对（例如 /p/ 和 /b/）位于同一键上。清音是默认设置，浊音通过 Shift 键输入，实现系统化和逻辑化使用。",
+            outro: "基于语言学知识，此键盘是发音教育、语音学习和英语发音练习的优化工具，为学习者和教育者提供全新的输入体验。",
+            download_button: "Windows 版下载",
+            install_guide_title: "如何安装",
+            install_step1: "1. 从提供的链接下载 ipabeta2.zip 文件。",
+            install_step2: "2. 解压文件并运行 setup.exe。",
+            install_step3: "3. 使用 Win + Space 键将键盘切换到 ipabeta2。",
+            uninstall_guide_title: "如何卸载",
+            uninstall_step1: "从控制面板卸载 ipabeta2 程序。",
+            tester_title: "单词音素测试器 (美式英语)",
+            tester_subtitle: "Select a word category, and check the phonemes.",
+            category_label: "单词类别：",
+            presented_word: "呈现的单词：",
+            ipa_input_label: "输入音素：",
+            placeholder: "例如: /həˈloʊ/",
+            show_answer_button: "显示答案",
+            new_word_button: "新单词",
+            meaning_language_label: "意义语言：",
+            show_meaning_button: "显示含义",
+            meaning_label: "含义：",
+            answer_ipa_label: "正确音素：",
+            loading_word: "正在加载新单词...",
+            footer_text: "© {year} PhonemeKeyboard. 保留所有权利。",
+            contact_email: "contact us : phonemekeyboard@gmail.com"
+        },
+        es: {
+            name: "Español",
+            title: "Teclado de Fonemas de Inglés",
+            nav_download: "Descargar Teclado",
+            nav_tester: "Programa de Aprendizaje de Fonemas",
+            typing_practice_title: "Experiencia de tecleo de fonemas",
+            typing_practice_subtitle: "Consulte la distribución del teclado y presione la posición correcta del fonema.",
+            download_title: "Teclado Personalizado de Fonemas NAE",
+            download_p1: "Este teclado es una herramienta de entrada enfocada en la pronunciación, diseñada en base al sistema de fonemas del Inglés Norteamericano (NAE).",
+            download_p2: "Si descarga el programa de teclado, podrá introducir fonemas cómodamente en cualquier parte del sistema.",
+            feature_title: "Principios de Diseño Clave:",
+            feature1_title: "Separación de Mano Izquierda/Derecha",
+            feature1_desc: "Las vocales se escriben con la mano izquierda y las consonantes con la derecha, mejorando la eficiencia y consistencia de la escritura.",
+            feature2_title: "Disposición Basada en la Articulación",
+            feature2_desc: "Los pares de consonantes que comparten el mismo lugar y modo de articulación (por ejemplo, /p/ y /b/) están en la misma tecla. Los sonidos sordos son los predeterminados, y los sonidos sonoros se escriben con la tecla Shift, permitiendo un uso sistemático y lógico.",
+            outro: "Basado en el conocimiento lingüístico, este teclado es una herramienta optimizada para la educación de la pronunciación, el aprendizaje de la fonética y la práctica de la pronunciación del inglés, ofreciendo una nueva experiencia de entrada tanto para estudiantes como para educadores.",
+            download_button: "Descargar para Windows",
+            install_guide_title: "Cómo Instalar",
+            install_step1: "1. Descargue el archivo ipabeta2.zip desde el enlace proporcionado.",
+            install_step2: "2. Descomprima el archivo y ejecute setup.exe.",
+            install_step3: "3. Cambie el teclado a ipabeta2 usando la tecla Win + Espacio.",
+            uninstall_guide_title: "Cómo Desinstalar",
+            uninstall_step1: "Desinstale el programa ipabeta2 desde el Panel de Control.",
+            tester_title: "Probador de Fonemas de Palabras (Inglés Americano)",
+            tester_subtitle: "Seleccione una categoría de palabras y compruebe los fonemas.",
+            category_label: "Categoría de Palabra:",
+            presented_word: "Palabra Presentada:",
+            ipa_input_label: "Introducir Fonemas:",
+            placeholder: "ej., /həˈloʊ/",
+            show_answer_button: "Mostrar Respuesta",
+            new_word_button: "Nueva Palabra",
+            meaning_language_label: "Idioma del Significado:",
+            show_meaning_button: "Mostrar Significado",
+            meaning_label: "Significado:",
+            answer_ipa_label: "Fonemas Correctos:",
+            loading_word: "Cargando nueva palabra...",
+            footer_text: "© {year} PhonemeKeyboard. Todos los derechos reservados.",
+            contact_email: "contact us : phonemekeyboard@gmail.com"
+        },
+        de: {
+            name: "Deutsch",
+            title: "Englisches Phonem-Tastatur",
+            nav_download: "Tastaturprogramm herunterladen",
+            nav_tester: "Wort-Phonem-Lernprogramm",
+            typing_practice_title: "Phonem-Tipp-Erlebnis",
+            typing_practice_subtitle: "Beachten Sie das Tastaturlayout und drücken Sie die korrekte Phonemposition.",
+            download_title: "NAE Phonembasierte benutzerdefinierte Tastatur",
+            download_p1: "Diese Tastatur ist ein ausspracheorientiertes Eingabewerkzeug, das auf dem nordamerikanischen englischen (NAE) Phonemsystem basiert.",
+            download_p2: "Wenn Sie das Tastaturprogramm herunterladen, können Sie Phoneme bequem überall im System eingeben.",
+            feature_title: "Wichtige Designprinzipien:",
+            feature1_title: "Links-/Rechts-Hand-Trennung",
+            feature1_desc: "Vokale werden mit der linken Hand und Konsonanten mit der rechten Hand eingegeben, was die Tippeffizienz und Konsistenz verbessert.",
+            feature2_title: "Artikulationsbasierte Anordnung",
+            feature2_desc: "Konsonantenpaare, die denselben Artikulationsort und dieselbe Artikulationsart teilen (z. B. /p/ und /b/), liegen auf derselben Taste. Stimmloser Laute sind Standard, und stimmhafte Laute werden mit der Umschalttaste eingegeben, was eine systematische und logische Verwendung ermöglicht.",
+            outro: "Basierend auf linguistischem Wissen, diese Tastatur ist ein optimiertes Werkzeug für Ausspracheunterricht, Phonetik-Lernen und englische Aussprachepraxis, das sowohl Lernenden als auch Lehrenden eine neue Eingabeerfahrung bietet.",
+            download_button: "Für Windows herunterladen",
+            install_guide_title: "Installationsanleitung",
+            install_step1: "1. Laden Sie die Datei ipabeta2.zip über den angegebenen Link herunter.",
+            install_step2: "2. Entpacken Sie die Datei und führen Sie setup.exe aus.",
+            install_step3: "3. Ändern Sie die Tastatur mit der Win + Leertaste auf ipabeta2.",
+            uninstall_guide_title: "Deinstallationsanleitung",
+            uninstall_step1: "Deinstallieren Sie das Programm ipabeta2 über die Systemsteuerung.",
+            tester_title: "Wort-Phonem-Tester (Amerikanisches Englisch)",
+            tester_subtitle: "Wählen Sie eine Wortkategorie aus und überprüfen Sie die Phoneme.",
+            category_label: "Wortkategorie:",
+            presented_word: "Präsentiertes Wort:",
+            ipa_input_label: "Phoneme eingeben:",
+            placeholder: "z.B., /həˈloʊ/",
+            show_answer_button: "Antwort anzeigen",
+            new_word_button: "Neues Wort",
+            meaning_language_label: "Bedeutungssprache:",
+            show_meaning_button: "Bedeutung anzeigen",
+            meaning_label: "Bedeutung:",
+            answer_ipa_label: "Korrekte Phoneme:",
+            loading_word: "Neues Wort wird geladen...",
+            footer_text: "© {year} PhonemeKeyboard. Alle Rechte vorbehalten.",
+            contact_email: "contact us : phonemekeyboard@gmail.com"
+        },
+        fr: {
+            name: "Français",
+            title: "Clavier Phonémique Anglais",
+            nav_download: "Télécharger le Clavier",
+            nav_tester: "Programme d'Apprentissage de Phonèmes",
+            typing_practice_title: "Expérience de frappe de phonèmes",
+            typing_practice_subtitle: "Référez-vous à la disposition du clavier et appuyez sur la position phonémique correcte.",
+            download_title: "Clavier Personnalisé de Phonèmes NAE",
+            download_p1: "Ce clavier est un outil de saisie axé sur la prononciation, conçu sur la base du système phonémique de l'anglais nord-américain (NAE).",
+            download_p2: "Si vous téléchargez le programme de clavier, vous pourrez saisir facilement des phonèmes n'importe où dans le système.",
+            feature_title: "Principes de Conception Clés :",
+            feature1_title: "Séparation Main Gauche/Droite",
+            feature1_desc: "Les voyelles sont tapées avec la main gauche et les consonnes avec la main droite, améliorant l'efficacité et la cohérence de la frappe.",
+            feature2_title: "Disposition Basée sur l'Articulation",
+            feature2_desc: "Les paires de consonnes partageant le même lieu et mode d'articulation (par exemple, /p/ et /b/) se trouvent sur la même touche. Les sons sourds sont par défaut, et les sons voisés sont tapés avec la touche Maj, permettant une utilisation systématique et logique.",
+            outro: "Basé sur les connaissances linguistiques, ce clavier est un outil optimisé pour l'enseignement de la prononciation, l'apprentissage de la phonétique et la pratique de la prononciation anglaise, offrant une nouvelle expérience de saisie aux apprenants et aux éducateurs.",
+            download_button: "Télécharger pour Windows",
+            install_guide_title: "Comment Installer",
+            install_step1: "1. Téléchargez le fichier ipabeta2.zip à partir du lien fourni.",
+            install_step2: "2. Décomprimez le fichier et exécutez setup.exe.",
+            install_step3: "3. Changez le clavier pour ipabeta2 en utilisant la touche Win + Espace.",
+            uninstall_guide_title: "Comment Désinstaller",
+            uninstall_step1: "Désinstallez le programme ipabeta2 depuis le Panneau de configuration.",
+            tester_title: "Testeur de Phonèmes de Mots (Anglais Américain)",
+            tester_subtitle: "Sélectionnez une catégorie de mots et vérifiez les phonèmes.",
+            category_label: "Catégorie de Mots :",
+            presented_word: "Mot Présenté :",
+            ipa_input_label: "Saisir les Phonèmes :",
+            placeholder: "par ex., /həˈloʊ/",
+            show_answer_button: "Afficher la Réponse",
+            new_word_button: "Nouveau Mot",
+            meaning_language_label: "Langue de la Signification :",
+            show_meaning_button: "Afficher la Signification :",
+            meaning_label: "Signification :",
+            answer_ipa_label: "Phonèmes Corrects :",
+            loading_word: "Chargement d'un nouveau mot...",
+            footer_text: "© {year} PhonemeKeyboard. Tous droits réservés.",
+            contact_email: "contact us : phonemekeyboard@gmail.com"
+        },
+        ru: {
+            name: "Русский",
+            title: "Английская фонетическая клавиатура",
+            nav_download: "Скачать программу клавиатуры",
+            nav_tester: "Программа изучения фонем слов",
+            typing_practice_title: "Опыт набора фонемы",
+            typing_practice_subtitle: "Обратитесь к раскладке клавиатуры и нажмите на правильное положение фонемы.",
+            download_title: "Пользовательская клавиатура на основе фонем NAE",
+            download_p1: "Эта клавиатура представляет собой инструмент ввода, ориентированный на произношение, разработанный на основе фонемной системы североамериканского английского (NAE).",
+            download_p2: "Если вы загрузите программу клавиатуры, вы сможете удобно вводить фонемы в любом месте системы.",
+            feature_title: "Основные принципы дизайна:",
+            feature1_title: "Разделение левой/правой руки",
+            feature1_desc: "Гласные вводятся левой рукой, а согласные — правой, что повышает эффективность и согласованность набора текста.",
+            feature2_title: "Артикуляционно-ориентированное расположение",
+            feature2_desc: "Пары согласных, имеющие одинаковое место и способ артикуляции (например, /p/ и /b/), находятся на одной клавише. Глухие звуки являются стандартными, а звонкие звуки вводятся с помощью клавиши Shift, что обеспечивает систематическое и логическое использование.",
+            outro: "Основанная на лингвистических знаниях, эта клавиатура является оптимизированным инструментом для обучения произношению, изучения фонетики и практики английского произношения, предлагая новый опыт ввода как для учащихся, так и для преподавателей.",
+            download_button: "Скачать для Windows",
+            install_guide_title: "Как установить",
+            install_step1: "1. Загрузите файл ipabeta2.zip по предоставленной ссылке.",
+            install_step2: "2. Распакуйте файл и запустите setup.exe.",
+            install_step3: "3. Измените раскладку клавиатуры на ipabeta2 с помощью клавиш Win + Пробел.",
+            uninstall_guide_title: "Как удалить",
+            uninstall_step1: "Удалите программу ipabeta2 из Панели управления.",
+            tester_title: "Тестер фонем слов (американский английский)",
+            tester_subtitle: "Выберите категорию слов и проверьте фонемы.",
+            category_label: "Категория слова:",
+            presented_word: "Представленное слово:",
+            ipa_input_label: "Введите фонемы:",
+            placeholder: "напр., /həˈloʊ/",
+            show_answer_button: "Показать ответ",
+            new_word_button: "Новое слово",
+            meaning_language_label: "Язык значения:",
+            show_meaning_button: "Показать значение",
+            meaning_label: "Значение:",
+            answer_ipa_label: "Правильные фонемы:",
+            loading_word: "Загрузка нового слова...",
+            footer_text: "© {year} PhonemeKeyboard. Все права защищены.",
+            contact_email: "contact us : phonemekeyboard@gmail.com"
+        }
+    };
+
+    // =================================================================
+    // 2. 단어, 음소, 다국어 뜻 DB
+    // =================================================================
+    const wordDB = {
+    "daily": wordDB_daily,
+    "academic": wordDB_toefl,
+    "business": wordDB_business
+};
+    // =================================================================
+    // 3. 컴포넌트 정의
+    // =================================================================
+    function PhonemeTypingPractice({ strings = {
+        typing_practice_title: "음소 타이핑 연습",
+        typing_practice_subtitle: "QWERTY 키보드를 사용하여 음소를 입력하세요."
+    } }) {
+        // 연습을 위한 음소 목록을 정의합니다.
+        const phonemes = ["aɪ", "eɪ", "ɔɪ", "i", "ɪ", "ʊ", "u", "e", "ə", "ʌ", "oʊ", "aʊ", "æ", "a", "ɔ", "p", "b", "f", "v", "t", "d", "ʃ", "ʒ", "k", "g", "y", "w", "θ", "ð", "s", "z", "r", "h", "m", "n", "l", "ŋ"];
+
+        // QWERTY 키와 음소 간의 매핑을 정의합니다.
+        // 이를 통해 사용자는 QWERTY 키(예: '1')를 눌러 특정 음소(예: 'aɪ')를 입력할 수 있습니다.
+        const keyMappings = {
+            '1': 'aɪ', '2': 'eɪ', '3': 'ɔɪ',
+            'q': 'i', 'w': 'ɪ', 'e': 'ʊ', 'r': 'u',
+            'a': 'e', 's': 'ə', 'S': 'ʌ', 'd': 'oʊ', 'f': 'aʊ',
+            'z': 'æ', 'x': 'a', 'c': 'ɔ',
+            'y': 'p', 'Y': 'b', 'u': 'f', 'U': 'v',
+            'i': 't', 'I': 'd', 'o': 'ʃ', 'O': 'ʒ',
+            'p': 'k', 'P': 'g', // 'P' 키에 'g' 음소를 매핑합니다.
+            '9': 'y', 'h': 'w', 'j': 'θ', 'J': 'ð',
+            'k': 's', 'K': 'z', 'l': 'r', ';': 'h',
+            'n': 'm', 'm': 'n', ',': 'l', '.': 'ŋ',
+            // 사용자 정의 레이아웃에 따라 필요한 만큼 더 많은 키 매핑을 추가합니다.
+        };
+
+        // 배열을 섞는 헬퍼 함수입니다.
+        const shuffle = (array) => {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        };
+
+        // 컴포넌트의 상태 변수입니다.
+        const [shuffledPhonemes, setShuffledPhonemes] = useState(() => shuffle(phonemes));
+        const [currentIndex, setCurrentIndex] = useState(0);
+        const [input, setInput] = useState("");
+        const [feedback, setFeedback] = useState("");
+        const currentPhoneme = shuffledPhonemes[currentIndex];
+        // 이 base64 문자열은 플레이스홀더입니다. 실제 키보드 레이아웃 이미지를 여기에 추가하세요.
+        const keyboardLayoutBase64 = "/images/phoneme-keyboard-layout.png"
+; // 원래 불완전한 Base64 문자열을 제거했습니다.
+        // 포커스 관리를 위한 input 요소에 대한 ref입니다.
+        const inputRef = useRef(null);
+
+        // 현재 음소가 변경될 때 input과 feedback을 재설정하는 이펙트 훅입니다.
+        // 또한 더 나은 사용자 경험을 위해 input 필드에 자동으로 포커스를 맞춥니다.
+        useEffect(() => {
+            setInput("");
+            setFeedback("");
+            if (inputRef.current) {
+                inputRef.current.focus();
+            }
+        }, [currentIndex, currentPhoneme]);
+
+        // 전역 keydown 이벤트를 처리하는 이펙트 훅입니다.
+        useEffect(() => {
+            const handleKeyDown = (e) => {
+                // 이벤트가 현재 컴포넌트의 input 요소에서 발생했는지 확인합니다.
+                // 이렇게 하면 다른 input 필드에 대한 백스페이스 동작을 방해하지 않습니다.
+                if (e.target === inputRef.current) {
+                    const mappedPhoneme = keyMappings[e.key];
+
+                    if (mappedPhoneme) {
+                        e.preventDefault(); // 매핑된 키에 대한 기본 브라우저 동작을 방지합니다.
+                        setInput(mappedPhoneme); // 매핑된 음소로 input 상태를 설정합니다.
+                        // 매핑된 키로 입력된 경우에도 바로 정답 여부를 확인합니다.
+                        if (mappedPhoneme === currentPhoneme) {
+                            setFeedback("correct");
+                            setTimeout(() => {
+                                const nextIndex = currentIndex + 1;
+                                setCurrentIndex(nextIndex >= shuffledPhonemes.length ? 0 : nextIndex);
+                                if (nextIndex >= shuffledPhonemes.length) {
+                                    setShuffledPhonemes(shuffle(phonemes));
+                                }
+                                setInput("");
+                                setFeedback("");
+                            }, 200);
+                        } else {
+                            setFeedback("incorrect");
+                        }
+                    } else if (e.key === 'Backspace') {
+                        e.preventDefault(); // 현재 input 필드의 백스페이스 기본 동작을 방지하고 수동으로 처리합니다.
+                        setInput("");
+                        setFeedback(""); // 백스페이스 시 피드백도 초기화합니다.
+                    }
+                }
+                // e.target이 inputRef.current가 아닌 경우, 이벤트가 정상적으로 전파되도록 합니다.
+            };
+
+            // window에 이벤트 리스너를 추가합니다.
+            window.addEventListener('keydown', handleKeyDown);
+
+            // 정리 함수: 컴포넌트가 언마운트될 때 이벤트 리스너를 제거합니다.
+            return () => {
+                window.removeEventListener('keydown', handleKeyDown);
+            };
+        }, [currentIndex, shuffledPhonemes, currentPhoneme, phonemes]); // 이펙트의 의존성입니다.
+
+        // 사용자가 직접 입력 필드에 타이핑할 때 호출되는 함수입니다.
+        // input 필드가 readOnly이므로 이 함수는 더 이상 직접적인 사용자 입력에 의해 트리거되지 않습니다.
+        const handleInputChange = (e) => {
+            // 이 함수는 input 필드가 readOnly이므로 직접적인 사용자 입력에는 반응하지 않습니다.
+            // 하지만 혹시 모를 상황을 대비하여 기존 로직을 유지합니다.
+            const value = e.target.value;
+            setInput(value);
+
+            if (value === currentPhoneme) {
+                setFeedback("correct");
+                setTimeout(() => {
+                    const nextIndex = currentIndex + 1;
+                    setCurrentIndex(nextIndex >= shuffledPhonemes.length ? 0 : nextIndex);
+                    if (nextIndex >= shuffledPhonemes.length) {
+                        setShuffledPhonemes(shuffle(phonemes));
+                    }
+                    setInput("");
+                    setFeedback("");
+                }, 200);
+            } else if (value.length >= currentPhoneme.length) {
+                setFeedback("incorrect");
+            } else {
+                setFeedback("");
             }
         };
 
-        // =================================================================
-        // 2. 단어, 음소, 다국어 뜻 DB
-        // =================================================================
-        const wordDB = {
-        "daily": wordDB_daily,
-        "academic": wordDB_toefl,
-        "business": wordDB_business
-    };
-        // =================================================================
-        // 3. 컴포넌트 정의
-        // =================================================================
-        function PhonemeTypingPractice({ strings = {
-            typing_practice_title: "음소 타이핑 연습",
-            typing_practice_subtitle: "QWERTY 키보드를 사용하여 음소를 입력하세요."
-        } }) {
-            // 연습을 위한 음소 목록을 정의합니다.
-            const phonemes = ["aɪ", "eɪ", "ɔɪ", "i", "ɪ", "ʊ", "u", "e", "ə", "ʌ", "oʊ", "aʊ", "æ", "a", "ɔ", "p", "b", "f", "v", "t", "d", "ʃ", "ʒ", "k", "g", "y", "w", "θ", "ð", "s", "z", "r", "h", "m", "n", "l", "ŋ"];
+        return (
+            <div className="bg-white flex flex-col items-center justify-center p-8 rounded-2xl shadow-lg">
+                <h2 className="text-3xl font-bold mb-2 text-indigo-800">{strings.typing_practice_title}</h2>
+                <p className="text-gray-600 mb-8">{strings.typing_practice_subtitle}</p>
+                <div className="text-9xl font-mono mb-6 p-4 text-gray-800">{currentPhoneme}</div>
+                <input
+                    ref={inputRef} // input 요소에 ref를 연결합니다.
+                    type="text"
+                    className={`text-2xl border-2 p-2 rounded-md w-64 text-center mb-10 transition-colors duration-200
+                        focus:outline-none focus:ring-2 focus:ring-blue-500 ${ // 포커스 스타일 추가
+                        feedback === "correct" ? "border-green-500 bg-green-50"
+                        : feedback === "incorrect" ? "border-red-500 bg-red-50"
+                        : "border-gray-300 bg-white"
+                    }`}
+                    value={input}
+                    onChange={handleInputChange} // 사용자가 직접 입력할 수 있도록 onChange 핸들러를 연결합니다.
+                    autoFocus // 컴포넌트 마운트 시 input에 자동으로 포커스를 맞춥니다.
+                    readOnly // keyMappings에 없는 키를 눌렀을 때 아무것도 입력되지 않도록 읽기 전용으로 설정합니다.
+                />
+                {/* 사용자에게 피드백 메시지를 표시합니다. */}
+                {feedback === "correct" && <p className="text-green-600 text-lg mb-4">Correct!</p>}
+                {feedback === "incorrect" && <p className="text-red-600 text-lg mb-4">Incorrect. Try again.</p>}
 
-            // QWERTY 키와 음소 간의 매핑을 정의합니다.
-            // 이를 통해 사용자는 QWERTY 키(예: '1')를 눌러 특정 음소(예: 'aɪ')를 입력할 수 있습니다.
-            const keyMappings = {
-                '1': 'aɪ', '2': 'eɪ', '3': 'ɔɪ',
-                'q': 'i', 'w': 'ɪ', 'e': 'ʊ', 'r': 'u',
-                'a': 'e', 's': 'ə', 'S': 'ʌ', 'd': 'oʊ', 'f': 'aʊ',
-                'z': 'æ', 'x': 'a', 'c': 'ɔ',
-                'y': 'p', 'Y': 'b', 'u': 'f', 'U': 'v',
-                'i': 't', 'I': 'd', 'o': 'ʃ', 'O': 'ʒ',
-                'p': 'k', 'P': 'g', // 'P' 키에 'g' 음소를 매핑합니다.
-                '9': 'y', 'h': 'w', 'j': 'θ', 'J': 'ð',
-                'k': 's', 'K': 'z', 'l': 'r', ';': 'h',
-                'n': 'm', 'm': 'n', ',': 'l', '.': 'ŋ',
-                // 사용자 정의 레이아웃에 따라 필요한 만큼 더 많은 키 매핑을 추가합니다.
-            };
-
-            // 배열을 섞는 헬퍼 함수입니다.
-            const shuffle = (array) => {
-                const shuffled = [...array];
-                for (let i = shuffled.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-                }
-                return shuffled;
-            };
-
-            // 컴포넌트의 상태 변수입니다.
-            const [shuffledPhonemes, setShuffledPhonemes] = useState(() => shuffle(phonemes));
-            const [currentIndex, setCurrentIndex] = useState(0);
-            const [input, setInput] = useState("");
-            const [feedback, setFeedback] = useState("");
-            const currentPhoneme = shuffledPhonemes[currentIndex];
-            // 이 base64 문자열은 플레이스홀더입니다. 실제 키보드 레이아웃 이미지를 여기에 추가하세요.
-            const keyboardLayoutBase64 = "/images/phoneme-keyboard-layout.png"
-    ; // 원래 불완전한 Base64 문자열을 제거했습니다.
-            // 포커스 관리를 위한 input 요소에 대한 ref입니다.
-            const inputRef = useRef(null);
-
-            // 현재 음소가 변경될 때 input과 feedback을 재설정하는 이펙트 훅입니다.
-            // 또한 더 나은 사용자 경험을 위해 input 필드에 자동으로 포커스를 맞춥니다.
-            useEffect(() => {
-                setInput("");
-                setFeedback("");
-                if (inputRef.current) {
-                    inputRef.current.focus();
-                }
-            }, [currentIndex, currentPhoneme]);
-
-            // 전역 keydown 이벤트를 처리하는 이펙트 훅입니다.
-            useEffect(() => {
-                const handleKeyDown = (e) => {
-                    // 이벤트가 현재 컴포넌트의 input 요소에서 발생했는지 확인합니다.
-                    // 이렇게 하면 다른 input 필드에 대한 백스페이스 동작을 방해하지 않습니다.
-                    if (e.target === inputRef.current) {
-                        const mappedPhoneme = keyMappings[e.key];
-
-                        if (mappedPhoneme) {
-                            e.preventDefault(); // 매핑된 키에 대한 기본 브라우저 동작을 방지합니다.
-                            setInput(mappedPhoneme); // 매핑된 음소로 input 상태를 설정합니다.
-                            // 매핑된 키로 입력된 경우에도 바로 정답 여부를 확인합니다.
-                            if (mappedPhoneme === currentPhoneme) {
-                                setFeedback("correct");
-                                setTimeout(() => {
-                                    const nextIndex = currentIndex + 1;
-                                    setCurrentIndex(nextIndex >= shuffledPhonemes.length ? 0 : nextIndex);
-                                    if (nextIndex >= shuffledPhonemes.length) {
-                                        setShuffledPhonemes(shuffle(phonemes));
-                                    }
-                                    setInput("");
-                                    setFeedback("");
-                                }, 200);
-                            } else {
-                                setFeedback("incorrect");
-                            }
-                        } else if (e.key === 'Backspace') {
-                            e.preventDefault(); // 현재 input 필드의 백스페이스 기본 동작을 방지하고 수동으로 처리합니다.
-                            setInput("");
-                            setFeedback(""); // 백스페이스 시 피드백도 초기화합니다.
-                        }
+                <div className="mt-8 max-w-4xl mx-auto">
+                    {/* 키보드 레이아웃 이미지에 대한 조건부 렌더링입니다. */}
+                    {keyboardLayoutBase64 === "" ? // Base64 문자열이 비어있는지 확인
+                        (<div className="w-full text-center p-8 bg-gray-100 rounded-lg">
+                            <p className="text-gray-500">키보드 레이아웃 이미지가 여기에 표시됩니다.</p>
+                        </div>) :
+                        (<img src={keyboardLayoutBase64} alt="Phoneme Keyboard Layout" className="mx-auto rounded-lg shadow-md w-full" />)
                     }
-                    // e.target이 inputRef.current가 아닌 경우, 이벤트가 정상적으로 전파되도록 합니다.
-                };
+                </div>
+            </div>
+        );
+    }
 
-                // window에 이벤트 리스너를 추가합니다.
-                window.addEventListener('keydown', handleKeyDown);
+    function WordPhonemeTester({ strings }) {
+        const [category, setCategory] = useState('daily');
+        const [currentWordData, setCurrentWordData] = useState(null);
+        const [userInput, setUserInput] = useState('');
+        const [showAnswer, setShowAnswer] = useState(false);
+        const [meaningLang, setMeaningLang] = useState('ko');
+        const [showMeaning, setShowMeaning] = useState(false);
+        const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
-                // 정리 함수: 컴포넌트가 언마운트될 때 이벤트 리스너를 제거합니다.
-                return () => {
-                    window.removeEventListener('keydown', handleKeyDown);
-                };
-            }, [currentIndex, shuffledPhonemes, currentPhoneme, phonemes]); // 이펙트의 의존성입니다.
+        const getNewWord = (cat) => {
+            setIsLoading(true); // 로딩 시작
+            const wordList = wordDB[cat];
+            if (!wordList || wordList.length === 0) {
+                setCurrentWordData(null);
+                setIsLoading(false); // 로딩 완료
+                return;
+            }
+            const randomEntry = wordList[Math.floor(Math.random() * wordList.length)];
+            setCurrentWordData(randomEntry);
+            setUserInput('');
+            setShowAnswer(false);
+            setShowMeaning(false);
+            setIsLoading(false); // 로딩 완료
+        };
 
-            // 사용자가 직접 입력 필드에 타이핑할 때 호출되는 함수입니다.
-            // input 필드가 readOnly이므로 이 함수는 더 이상 직접적인 사용자 입력에 의해 트리거되지 않습니다.
-            const handleInputChange = (e) => {
-                // 이 함수는 input 필드가 readOnly이므로 직접적인 사용자 입력에는 반응하지 않습니다.
-                // 하지만 혹시 모를 상황을 대비하여 기존 로직을 유지합니다.
-                const value = e.target.value;
-                setInput(value);
+        useEffect(() => { 
+            getNewWord(category);
+        }, [category]);
 
-                if (value === currentPhoneme) {
-                    setFeedback("correct");
-                    setTimeout(() => {
-                        const nextIndex = currentIndex + 1;
-                        setCurrentIndex(nextIndex >= shuffledPhonemes.length ? 0 : nextIndex);
-                        if (nextIndex >= shuffledPhonemes.length) {
-                            setShuffledPhonemes(shuffle(phonemes));
-                        }
-                        setInput("");
-                        setFeedback("");
-                    }, 200);
-                } else if (value.length >= currentPhoneme.length) {
-                    setFeedback("incorrect");
-                } else {
-                    setFeedback("");
-                }
-            };
+        const speakWord = (text) => {
+            if (!text || !('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        };
 
+        // 로딩 중일 때 로딩 메시지를 표시
+        if (isLoading) {
             return (
-                <div className="bg-white flex flex-col items-center justify-center p-8 rounded-2xl shadow-lg">
-                    <h2 className="text-3xl font-bold mb-2 text-indigo-800">{strings.typing_practice_title}</h2>
-                    <p className="text-gray-600 mb-8">{strings.typing_practice_subtitle}</p>
-                    <div className="text-9xl font-mono mb-6 p-4 text-gray-800">{currentPhoneme}</div>
-                    <input
-                        ref={inputRef} // input 요소에 ref를 연결합니다.
-                        type="text"
-                        className={`text-2xl border-2 p-2 rounded-md w-64 text-center mb-10 transition-colors duration-200
-                            focus:outline-none focus:ring-2 focus:ring-blue-500 ${ // 포커스 스타일 추가
-                            feedback === "correct" ? "border-green-500 bg-green-50"
-                            : feedback === "incorrect" ? "border-red-500 bg-red-50"
-                            : "border-gray-300 bg-white"
-                        }`}
-                        value={input}
-                        onChange={handleInputChange} // 사용자가 직접 입력할 수 있도록 onChange 핸들러를 연결합니다.
-                        autoFocus // 컴포넌트 마운트 시 input에 자동으로 포커스를 맞춥니다.
-                        readOnly // keyMappings에 없는 키를 눌렀을 때 아무것도 입력되지 않도록 읽기 전용으로 설정합니다.
-                    />
-                    {/* 사용자에게 피드백 메시지를 표시합니다. */}
-                    {feedback === "correct" && <p className="text-green-600 text-lg mb-4">Correct!</p>}
-                    {feedback === "incorrect" && <p className="text-red-600 text-lg mb-4">Incorrect. Try again.</p>}
-
-                    <div className="mt-8 max-w-4xl mx-auto">
-                        {/* 키보드 레이아웃 이미지에 대한 조건부 렌더링입니다. */}
-                        {keyboardLayoutBase64 === "" ? // Base64 문자열이 비어있는지 확인
-                            (<div className="w-full text-center p-8 bg-gray-100 rounded-lg">
-                                <p className="text-gray-500">키보드 레이아웃 이미지가 여기에 표시됩니다.</p>
-                            </div>) :
-                            (<img src={keyboardLayoutBase64} alt="Phoneme Keyboard Layout" className="mx-auto rounded-lg shadow-md w-full" />)
-                        }
-                    </div>
+                <div className="bg-white p-8 rounded-2xl shadow-lg w-full text-center">
+                    <h2 className="text-3xl font-bold mb-2 text-center text-indigo-800">{strings.tester_title}</h2>
+                    <p className="text-gray-600 mb-8 text-center">{strings.subtitle}</p>
+                    <p className="text-xl text-gray-500">{strings.loading_word}</p>
                 </div>
             );
         }
 
-        function WordPhonemeTester({ strings }) {
-            const [category, setCategory] = useState('Daily');
-            const [currentWordData, setCurrentWordData] = useState(null);
-            const [userInput, setUserInput] = useState('');
-            const [showAnswer, setShowAnswer] = useState(false);
-            const [meaningLang, setMeaningLang] = useState('ko');
-            const [showMeaning, setShowMeaning] = useState(false);
-
-            const getNewWord = (cat) => {
-                const wordList = wordDB[cat];
-                if (!wordList || wordList.length === 0) {
-                    setCurrentWordData(null); // Handle empty category
-                    return;
-                }
-                const randomEntry = wordList[Math.floor(Math.random() * wordList.length)];
-                setCurrentWordData(randomEntry);
-                setUserInput('');
-                setShowAnswer(false);
-                setShowMeaning(false);
-            };
-
-            useEffect(() => { getNewWord(category); }, [category]);
-
-            const speakWord = (text) => {
-                if (!text || !('speechSynthesis' in window)) return;
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-US';
-                utterance.rate = 0.9;
-                window.speechSynthesis.speak(utterance);
-            };
-
-            if (!currentWordData) return <div>{strings.loading_word}</div>;
-
+        // 데이터가 없으면 오류 메시지를 표시 (선택 사항)
+        if (!currentWordData) {
             return (
-                <div className="bg-white p-8 rounded-2xl shadow-lg w-full">
+                <div className="bg-white p-8 rounded-2xl shadow-lg w-full text-center">
                     <h2 className="text-3xl font-bold mb-2 text-center text-indigo-800">{strings.tester_title}</h2>
-                    <p className="text-gray-600 mb-8 text-center">{strings.tester_subtitle}</p>
+                    <p className="text-xl text-red-500">No words found for this category.</p>
+                </div>
+            );
+        }
 
-                    <div className="mb-6">
-                        <label className="block text-center text-gray-700 font-semibold mb-2">{strings.category_label}</label>
-                        <select onChange={(e) => setCategory(e.target.value)} value={category} className="w-full bg-gray-100 border-2 border-gray-200 text-gray-700 py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            {Object.keys(wordDB).map(cat => <option key={cat} value={cat}>{cat}</option>)}
+        return (
+            <div className="bg-white p-8 rounded-2xl shadow-lg w-full">
+                <h2 className="text-3xl font-bold mb-2 text-center text-indigo-800">{strings.tester_title}</h2>
+                <p className="text-gray-600 mb-8 text-center">{strings.tester_subtitle}</p>
+
+                <div className="mb-6">
+                    <label className="block text-center text-gray-700 font-semibold mb-2">{strings.category_label}</label>
+                    <select onChange={(e) => setCategory(e.target.value)} value={category} className="w-full bg-gray-100 border-2 border-gray-200 text-gray-700 py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        {Object.keys(wordDB).map(cat => <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>)}
+                    </select>
+                </div>
+
+                <div className="mb-6 p-6 bg-blue-50 rounded-xl border-2 border-blue-200 text-center shadow-inner">
+                    <label className="block text-blue-800 font-semibold mb-2">{strings.presented_word}</label>
+                    <div className="flex items-center justify-center gap-3">
+                        <p className="text-4xl font-bold text-blue-900">{currentWordData.word}</p>
+                        <button onClick={() => speakWord(currentWordData.word)} className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072M17.657 6.343a9 9 0 010 12.728M9 5v14l-4-4H3a2 2 0 01-2-2V9a2 2 0 012-2h2l4-4z" /></svg>
+                        </button>
+                        <button onClick={() => {
+                            const tempInput = document.createElement('textarea');
+                            tempInput.value = currentWordData.word;
+                            document.body.appendChild(tempInput);
+                            tempInput.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(tempInput);
+                        }} className="p-2 rounded-full bg-gray-500 text-white hover:bg-gray-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m-4 3h10a2 2 0 012 2v2M4 7h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div className="mb-4">
+                    <label htmlFor="phoneme-input" className="block text-gray-700 font-semibold mb-2">{strings.ipa_input_label}</label>
+                    <input id="phoneme-input" type="text" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-lg" placeholder={strings.placeholder} value={userInput} onChange={(e) => setUserInput(e.target.value)} />
+                </div>
+
+                {showAnswer && <div className="p-4 bg-gray-100 rounded-lg text-center"><p className="text-gray-700">{strings.answer_ipa_label} <span className="font-bold text-lg">{currentWordData.ipa.replace(/j/g, 'y')}</span></p></div>}
+                {showMeaning && <div className="mt-2 p-4 bg-green-50 rounded-lg text-center"><p className="text-green-800">{strings.meaning_label} <span className="font-bold text-lg">{currentWordData.meanings[meaningLang] || currentWordData.meanings.en}</span></p></div>}
+
+                <div className="mt-6 grid grid-cols-2 gap-4">
+                    <button onClick={() => setShowAnswer(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg text-lg shadow-lg transition-all w-full col-span-2">{strings.show_answer_button}</button>
+                    <div className="col-span-2 grid grid-cols-2 gap-4">
+                        <select onChange={(e) => setMeaningLang(e.target.value)} value={meaningLang} className="bg-gray-100 border-2 border-gray-200 text-gray-700 py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            {Object.keys(uiStrings).map(langKey => <option key={langKey} value={langKey}>{uiStrings[langKey].name}</option>)}
                         </select>
+                        <button onClick={() => setShowMeaning(true)} className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg text-lg shadow-lg transition-all">{strings.show_meaning_button}</button>
                     </div>
+                    <button onClick={() => getNewWord(category)} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg text-lg shadow-lg transition-all col-span-2">{strings.new_word_button}</button>
+                </div>
+            </div>
+        );
+    }
 
-                    <div className="mb-6 p-6 bg-blue-50 rounded-xl border-2 border-blue-200 text-center shadow-inner">
-                        <label className="block text-blue-800 font-semibold mb-2">{strings.presented_word}</label>
-                        <div className="flex items-center justify-center gap-3">
-                            <p className="text-4xl font-bold text-blue-900">{currentWordData.word}</p>
-                            <button onClick={() => speakWord(currentWordData.word)} className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072M17.657 6.343a9 9 0 010 12.728M9 5v14l-4-4H3a2 2 0 01-2-2V9a2 2 0 012-2h2l4-4z" /></svg>
-                            </button>
-                            <button onClick={() => {
-                                // navigator.clipboard.writeText()는 iframe에서 보안 문제로 작동하지 않을 수 있으므로
-                                // document.execCommand('copy')를 사용합니다.
-                                const tempInput = document.createElement('textarea');
-                                tempInput.value = currentWordData.word;
-                                document.body.appendChild(tempInput);
-                                tempInput.select();
-                                document.execCommand('copy');
-                                document.body.removeChild(tempInput);
-                                // 복사 완료 피드백을 사용자에게 제공할 수 있습니다 (예: 잠시 메시지 표시)
-                            }} className="p-2 rounded-full bg-gray-500 text-white hover:bg-gray-600">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m-4 3h10a2 2 0 012 2v2M4 7h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1z" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="phoneme-input" className="block text-gray-700 font-semibold mb-2">{strings.ipa_input_label}</label>
-                        <input id="phoneme-input" type="text" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-lg" placeholder={strings.placeholder} value={userInput} onChange={(e) => setUserInput(e.target.value)} />
-                    </div>
+    // =================================================================
+    // 4. 전체 페이지 앱 컴포넌트
+    // =================================================================
+    function App() {
+        const [language, setLanguage] = useState('en');
+        const strings = uiStrings[language] || uiStrings.en;
 
-                    {showAnswer && <div className="p-4 bg-gray-100 rounded-lg text-center"><p className="text-gray-700">{strings.answer_ipa_label} <span className="font-bold text-lg">{currentWordData.ipa.replace(/j/g, 'y')}</span></p></div>}
-                    {showMeaning && <div className="mt-2 p-4 bg-green-50 rounded-lg text-center"><p className="text-green-800">{strings.meaning_label} <span className="font-bold text-lg">{currentWordData.meanings[meaningLang] || currentWordData.meanings.en}</span></p></div>}
-
-                    <div className="mt-6 grid grid-cols-2 gap-4">
-                        <button onClick={() => setShowAnswer(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg text-lg shadow-lg transition-all w-full col-span-2">{strings.show_answer_button}</button>
-                        <div className="col-span-2 grid grid-cols-2 gap-4">
-                            <select onChange={(e) => setMeaningLang(e.target.value)} value={meaningLang} className="bg-gray-100 border-2 border-gray-200 text-gray-700 py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        return (
+            <Fragment>
+                <header className="bg-white shadow-md sticky top-0 z-10">
+                    <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
+                        {/* Clickable site title and favicon */}
+                        <a href="/" className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors duration-200">
+                            {/* Favicon image next to the title */}
+                            <img
+                                src="/images/phonemekeyboard.com-icon.png"
+                                alt="Keyboard Icon"
+                                className="h-8 w-8 inline-block"
+                            />
+                            <h1 className="text-2xl font-bold">{strings.title}</h1>
+                        </a>
+                        <div className="flex items-center space-x-4">
+                            <a href="#download" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">{strings.nav_download}</a>
+                            <a href="#word-tester" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">{strings.nav_tester}</a>
+                            <select onChange={(e) => setLanguage(e.target.value)} value={language} className="bg-gray-100 border-2 border-gray-200 text-gray-700 py-1 px-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 {Object.keys(uiStrings).map(langKey => <option key={langKey} value={langKey}>{uiStrings[langKey].name}</option>)}
                             </select>
-                            <button onClick={() => setShowMeaning(true)} className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg text-lg shadow-lg transition-all">{strings.show_meaning_button}</button>
                         </div>
-                        <button onClick={() => getNewWord(category)} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg text-lg shadow-lg transition-all col-span-2">{strings.new_word_button}</button>
-                    </div>
-                </div>
-            );
-        }
+                    </nav>
+                </header>
 
-        // =================================================================
-        // 4. 전체 페이지 앱 컴포넌트
-        // =================================================================
-        function App() {
-            const [language, setLanguage] = useState('en');
-            const strings = uiStrings[language] || uiStrings.en;
+                <main className="container mx-auto px-6 py-12">
+                    <section id="typing-practice" className="mb-24">
+                        <PhonemeTypingPractice strings={strings} />
+                    </section>
 
-            return (
-                <Fragment>
-                    <header className="bg-white shadow-md sticky top-0 z-10">
-                        <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
-                            {/* Clickable site title and favicon */}
-                            <a href="/" className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors duration-200">
-                                {/* Favicon image next to the title */}
-                                <img
-                                    src="/images/phonemekeyboard.com-icon.png"
-                                    alt="Keyboard Icon"
-                                    className="h-8 w-8 inline-block"
-                                />
-                                <h1 className="text-2xl font-bold">{strings.title}</h1>
-                            </a>
-                            <div className="flex items-center space-x-4">
-                                <a href="#download" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">{strings.nav_download}</a>
-                                <a href="#word-tester" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">{strings.nav_tester}</a>
-                                <select onChange={(e) => setLanguage(e.target.value)} value={language} className="bg-gray-100 border-2 border-gray-200 text-gray-700 py-1 px-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    {Object.keys(uiStrings).map(langKey => <option key={langKey} value={langKey}>{uiStrings[langKey].name}</option>)}
-                                </select>
+                    <section id="download" className="text-center mb-24">
+                        <div className="max-w-3xl mx-auto text-left space-y-8">
+                            <h2 className="text-4xl font-bold text-gray-800 text-center">{strings.download_title}</h2>
+                            <p className="text-lg text-gray-600">{strings.download_p1}</p>
+                            <p className="text-lg text-gray-600">{strings.download_p2}</p>
+                            <div>
+                                <h3 className="text-2xl font-semibold text-gray-700 mb-3">{strings.feature_title}</h3>
+                                <ul className="space-y-4">
+                                    <li className="flex items-start">
+                                        <span className="bg-blue-100 text-blue-600 font-bold rounded-full h-8 w-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">1</span>
+                                        <div>
+                                            <h4 className="font-bold text-lg text-gray-800">{strings.feature1_title}</h4>
+                                            <p className="text-gray-600">{strings.feature1_desc}</p>
+                                        </div>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <span className="bg-blue-100 text-blue-600 font-bold rounded-full h-8 w-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">2</span>
+                                        <div>
+                                            <h4 className="font-bold text-lg text-gray-800">{strings.feature2_title}</h4>
+                                            <p className="text-gray-600">{strings.feature2_desc}</p>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
-                        </nav>
-                    </header>
+                            <p className="text-lg text-gray-600 pt-4">{strings.outro}</p>
+                        </div>
+                        <div className="mt-12 flex justify-center gap-4">
+                            <a href="https://drive.google.com/file/d/1O6UiKut1tz0vEwsb3bTchw0ALn84pmq_/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition-transform transform hover:scale-105 shadow-lg inline-block">{strings.download_button}</a>
+                        </div>
+                        <div className="mt-12 max-w-2xl mx-auto text-left">
+                            <h3 className="text-2xl font-semibold text-gray-700 mb-4">{strings.install_guide_title}</h3>
+                            <ol className="list-decimal list-inside space-y-2 text-gray-600">
+                                <li>{strings.install_step1}</li>
+                                <li>{strings.install_step2}</li>
+                                <li>{strings.install_step3}</li>
+                            </ol>
+                            <h3 className="text-2xl font-semibold text-gray-700 mt-8 mb-4">{strings.uninstall_guide_title}</h3>
+                            <p className="text-gray-600">{strings.uninstall_step1}</p>
+                        </div>
+                    </section>
 
-                    <main className="container mx-auto px-6 py-12">
-                        <section id="typing-practice" className="mb-24">
-                            <PhonemeTypingPractice strings={strings} />
-                        </section>
+                    <section id="word-tester">
+                        <WordPhonemeTester strings={strings} />
+                    </section>
+                </main>
 
-                        <section id="download" className="text-center mb-24">
-                            <div className="max-w-3xl mx-auto text-left space-y-8">
-                                <h2 className="text-4xl font-bold text-gray-800 text-center">{strings.download_title}</h2>
-                                <p className="text-lg text-gray-600">{strings.download_p1}</p>
-                                <p className="text-lg text-gray-600">{strings.download_p2}</p>
-                                <div>
-                                    <h3 className="text-2xl font-semibold text-gray-700 mb-3">{strings.feature_title}</h3>
-                                    <ul className="space-y-4">
-                                        <li className="flex items-start">
-                                            <span className="bg-blue-100 text-blue-600 font-bold rounded-full h-8 w-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">1</span>
-                                            <div>
-                                                <h4 className="font-bold text-lg text-gray-800">{strings.feature1_title}</h4>
-                                                <p className="text-gray-600">{strings.feature1_desc}</p>
-                                            </div>
-                                        </li>
-                                        <li className="flex items-start">
-                                            <span className="bg-blue-100 text-blue-600 font-bold rounded-full h-8 w-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">2</span>
-                                            <div>
-                                                <h4 className="font-bold text-lg text-gray-800">{strings.feature2_title}</h4>
-                                                <p className="text-gray-600">{strings.feature2_desc}</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <p className="text-lg text-gray-600 pt-4">{strings.outro}</p>
-                            </div>
-                            <div className="mt-12 flex justify-center gap-4">
-                                <a href="https://drive.google.com/file/d/1O6UiKut1tz0vEwsb3bTchw0ALn84pmq_/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition-transform transform hover:scale-105 shadow-lg inline-block">{strings.download_button}</a>
-                            </div>
-                            <div className="mt-12 max-w-2xl mx-auto text-left">
-                                <h3 className="text-2xl font-semibold text-gray-700 mb-4">{strings.install_guide_title}</h3>
-                                <ol className="list-decimal list-inside space-y-2 text-gray-600">
-                                    <li>{strings.install_step1}</li>
-                                    <li>{strings.install_step2}</li>
-                                    <li>{strings.install_step3}</li>
-                                </ol>
-                                <h3 className="text-2xl font-semibold text-gray-700 mt-8 mb-4">{strings.uninstall_guide_title}</h3>
-                                <p className="text-gray-600">{strings.uninstall_step1}</p>
-                            </div>
-                        </section>
+                <footer className="bg-gray-800 text-white text-center p-6 mt-12">
+                    <p>{strings.footer_text.replace('{year}', new Date().getFullYear())}</p>
+                    <p>{strings.contact_email}</p>
+                </footer>
+            </Fragment>
+        );
+    }
 
-                        <section id="word-tester">
-                            <WordPhonemeTester strings={strings} />
-                        </section>
-                    </main>
-
-                    <footer className="bg-gray-800 text-white text-center p-6 mt-12">
-                        <p>{strings.footer_text.replace('{year}', new Date().getFullYear())}</p>
-                        <p>{strings.contact_email}</p>
-                    </footer>
-                </Fragment>
-            );
-        }
-
-        const container = document.getElementById('root');
-        const root = ReactDOM.createRoot(container);
-        root.render(<App />);
-    </script>
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<App />);
+</script>
     <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="phonemekeyd" data-description="Support me on Buy me a coffee!" data-message="Thank you for your support! Your contribution helps me create even better tools." data-color="#5F7FFF" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
 </body>
 </html>
+
 
 
