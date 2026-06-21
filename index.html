@@ -21,7 +21,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Pin Babel to v7: v8's preset-react defaults to the automatic JSX runtime,
+         which emits `import` statements that break this inline (classic) text/babel
+         script and leave the page blank. -->
+    <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
 
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1214919359696040"
