@@ -1,26 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="490msFu2MfG5cSr73U3eZNT1H5dtKWEcUT-PNyXBNI4" />
     <meta name="description" content="An interactive web application for practicing and testing English phonemes with a custom keyboard. Download the phoneme keyboard for Windows and improve your pronunciation.">
     <meta name="keywords" content="phoneme, phoneme keyboard, IPA keyboard, how to type IPA, how to type phoneme, how to type english phoneme, NAE pronunciation, how to be fluent in English, English pronunciation, typing practice, phoneme tester, 음소 키보드, 발음기호 키보드">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>English Phoneme Keyboard</title>
+
+    <!-- Open Graph / social preview -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="English Phoneme Keyboard">
+    <meta property="og:description" content="Practice and test English phonemes with a custom NAE-based keyboard. Download for Windows and improve your pronunciation.">
+    <meta property="og:image" content="images/phonemekeyboard.com-icon.png">
+    <meta name="twitter:card" content="summary">
+
+    <!-- Favicon -->
+    <link rel="icon" href="images/phonemekeyboard.com-icon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1214919359696040"
+     crossorigin="anonymous"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Roboto:wght@400;500;700;900&display=swap');
         html { scroll-behavior: smooth; }
         body { font-family: 'Roboto', 'Noto Sans KR', sans-serif; }
     </style>
-    <!-- Favicon: A simple keyboard SVG icon -->
-    <link rel="icon" href="/images/phonemekeyboard.com-icon.png"
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1214919359696040"
-     crossorigin="anonymous"></script>
-     </head>
+</head>
 <body class="bg-slate-50">
     <div id="root"></div>
 <script src="db_daily.js"></script>
@@ -176,7 +188,7 @@
             uninstall_guide_title: "如何卸载",
             uninstall_step1: "从控制面板卸载 ipabeta2 程序。",
             tester_title: "单词音素测试器 (美式英语)",
-            tester_subtitle: "Select a word category, and check the phonemes.",
+            tester_subtitle: "选择一个单词类别，然后检查音素。",
             category_label: "单词类别：",
             presented_word: "呈现的单词：",
             ipa_input_label: "输入音素：",
@@ -400,8 +412,7 @@
         const [feedback, setFeedback] = useState("");
         const currentPhoneme = shuffledPhonemes[currentIndex];
         // 이 base64 문자열은 플레이스홀더입니다. 실제 키보드 레이아웃 이미지를 여기에 추가하세요.
-        const keyboardLayoutBase64 = "/images/phoneme-keyboard-layout.png"
-; // 원래 불완전한 Base64 문자열을 제거했습니다.
+        const keyboardLayoutBase64 = "images/phoneme-keyboard-layout.png";
         // 포커스 관리를 위한 input 요소에 대한 ref입니다.
         const inputRef = useRef(null);
 
@@ -529,6 +540,7 @@
         const [meaningLang, setMeaningLang] = useState('ko');
         const [showMeaning, setShowMeaning] = useState(false);
         const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
+        const [copied, setCopied] = useState(false); // 복사 완료 피드백 상태
 
         const getNewWord = (cat) => {
             setIsLoading(true); // 로딩 시작
@@ -559,12 +571,43 @@
             window.speechSynthesis.speak(utterance);
         };
 
+        const copyWord = async (text) => {
+            if (!text) return;
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(text);
+                } else {
+                    // 비보안 컨텍스트(http) 대비 폴백
+                    const tempInput = document.createElement('textarea');
+                    tempInput.value = text;
+                    tempInput.style.position = 'fixed';
+                    tempInput.style.opacity = '0';
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                }
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+            } catch (err) {
+                console.error('Copy failed:', err);
+            }
+        };
+
+        // 정답 음소는 화면에 j -> y로 표기하므로 비교 시에도 동일하게 정규화하고
+        // 슬래시/공백 등 부수적인 문자는 무시하여 매칭한다.
+        const normalizeIpa = (s) => (s || '').replace(/j/g, 'y').replace(/[\/\s]/g, '').trim();
+        const isAnswerCorrect =
+            userInput.length > 0 &&
+            currentWordData &&
+            normalizeIpa(userInput) === normalizeIpa(currentWordData.ipa);
+
         // 로딩 중일 때 로딩 메시지를 표시
         if (isLoading) {
             return (
                 <div className="bg-white p-8 rounded-2xl shadow-lg w-full text-center">
                     <h2 className="text-3xl font-bold mb-2 text-center text-indigo-800">{strings.tester_title}</h2>
-                    <p className="text-gray-600 mb-8 text-center">{strings.subtitle}</p>
+                    <p className="text-gray-600 mb-8 text-center">{strings.tester_subtitle}</p>
                     <p className="text-xl text-gray-500">{strings.loading_word}</p>
                 </div>
             );
@@ -596,26 +639,29 @@
                     <label className="block text-blue-800 font-semibold mb-2">{strings.presented_word}</label>
                     <div className="flex items-center justify-center gap-3">
                         <p className="text-4xl font-bold text-blue-900">{currentWordData.word}</p>
-                        <button onClick={() => speakWord(currentWordData.word)} className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600">
+                        <button onClick={() => speakWord(currentWordData.word)} aria-label="Listen to pronunciation" title="Listen" className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072M17.657 6.343a9 9 0 010 12.728M9 5v14l-4-4H3a2 2 0 01-2-2V9a2 2 0 012-2h2l4-4z" /></svg>
                         </button>
-                        <button onClick={() => {
-                            const tempInput = document.createElement('textarea');
-                            tempInput.value = currentWordData.word;
-                            document.body.appendChild(tempInput);
-                            tempInput.select();
-                            document.execCommand('copy');
-                            document.body.removeChild(tempInput);
-                        }} className="p-2 rounded-full bg-gray-500 text-white hover:bg-gray-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m-4 3h10a2 2 0 012 2v2M4 7h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1z" />
-                            </svg>
+                        <button onClick={() => copyWord(currentWordData.word)} aria-label="Copy word" title={copied ? "Copied!" : "Copy"} className={`p-2 rounded-full text-white focus:outline-none focus:ring-2 focus:ring-gray-400 ${copied ? "bg-green-500 hover:bg-green-600" : "bg-gray-500 hover:bg-gray-600"}`}>
+                            {copied ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m-4 3h10a2 2 0 012 2v2M4 7h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1z" />
+                                </svg>
+                            )}
                         </button>
                     </div>
                 </div>
                 <div className="mb-4">
                     <label htmlFor="phoneme-input" className="block text-gray-700 font-semibold mb-2">{strings.ipa_input_label}</label>
-                    <input id="phoneme-input" type="text" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-lg" placeholder={strings.placeholder} value={userInput} onChange={(e) => setUserInput(e.target.value)} />
+                    <input id="phoneme-input" type="text" autoComplete="off"
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 text-lg transition-colors duration-200 ${
+                            isAnswerCorrect ? "border-green-500 bg-green-50 focus:ring-green-500"
+                            : "border-gray-300 focus:ring-blue-500"
+                        }`}
+                        placeholder={strings.placeholder} value={userInput} onChange={(e) => setUserInput(e.target.value)} />
+                    {isAnswerCorrect && <p className="text-green-600 mt-2 font-semibold">✓ Correct!</p>}
                 </div>
 
                 {showAnswer && <div className="p-4 bg-gray-100 rounded-lg text-center"><p className="text-gray-700">{strings.answer_ipa_label} <span className="font-bold text-lg">{currentWordData.ipa.replace(/j/g, 'y')}</span></p></div>}
@@ -642,15 +688,20 @@
         const [language, setLanguage] = useState('en');
         const strings = uiStrings[language] || uiStrings.en;
 
+        // 선택한 언어에 맞춰 <html lang> 속성을 갱신해 접근성/SEO를 개선합니다.
+        useEffect(() => {
+            document.documentElement.lang = language;
+        }, [language]);
+
         return (
             <Fragment>
                 <header className="bg-white shadow-md sticky top-0 z-10">
-                    <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
+                    <nav className="container mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-y-2">
                         {/* Clickable site title and favicon */}
-                        <a href="/" className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors duration-200">
+                        <a href="#typing-practice" className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors duration-200">
                             {/* Favicon image next to the title */}
                             <img
-                                src="/images/phonemekeyboard.com-icon.png"
+                                src="images/phonemekeyboard.com-icon.png"
                                 alt="Keyboard Icon"
                                 className="h-8 w-8 inline-block"
                             />
@@ -659,7 +710,7 @@
                         <div className="flex items-center space-x-4">
                             <a href="#download" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">{strings.nav_download}</a>
                             <a href="#word-tester" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">{strings.nav_tester}</a>
-                            <select onChange={(e) => setLanguage(e.target.value)} value={language} className="bg-gray-100 border-2 border-gray-200 text-gray-700 py-1 px-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select aria-label="Site language" onChange={(e) => setLanguage(e.target.value)} value={language} className="bg-gray-100 border-2 border-gray-200 text-gray-700 py-1 px-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 {Object.keys(uiStrings).map(langKey => <option key={langKey} value={langKey}>{uiStrings[langKey].name}</option>)}
                             </select>
                         </div>
@@ -698,7 +749,7 @@
                             <p className="text-lg text-gray-600 pt-4">{strings.outro}</p>
                         </div>
                         <div className="mt-12 flex justify-center gap-4">
-                            <a href="https://github.com/phonemekeyboard/phonemekeyboard-site/raw/refs/heads/main/ipabeta2.zip" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition-transform transform hover:scale-105 shadow-lg inline-block">{strings.download_button}</a>
+                            <a href="ipabeta2.zip" download className="bg-blue-600 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition-transform transform hover:scale-105 shadow-lg inline-block">{strings.download_button}</a>
                         </div>
                         <div className="mt-12 max-w-2xl mx-auto text-left">
                             <h3 className="text-2xl font-semibold text-gray-700 mb-4">{strings.install_guide_title}</h3>
